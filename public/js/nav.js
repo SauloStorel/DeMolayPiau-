@@ -173,6 +173,6 @@ function initPageTransitions() {
 
     e.preventDefault();
     document.body.classList.add('page-exit');
-    setTimeout(() => { window.location.href = href; }, 180);
+    setTimeout(() => { window.location.href = href; }, 120);
   });
 }
