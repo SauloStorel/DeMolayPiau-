@@ -247,13 +247,227 @@ input:checked + .toggle-slider::before { transform: translateX(20px); }
    STATUS BADGES
    ============================================= */
 .status-badge {
-  display: inline-block; font-size: 0.72rem; font-weight: 700;
-  padding: 0.2rem 0.65rem; border-radius: 20px;
-  text-transform: uppercase; letter-spacing: 0.05em;
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 0.25rem 0.7rem; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  white-space: nowrap;
 }
-.status-pending  { background: rgba(201,160,48,0.12); color: var(--gold-dim); border: 1px solid rgba(201,160,48,0.3); }
+.status-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.7;
+}
+.status-pending  { background: rgba(201,160,48,0.12); color: #9A7820; border: 1px solid rgba(201,160,48,0.3); }
 .status-paid     { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
 .status-cancelled{ background: rgba(217,79,79,0.1); color: var(--danger); border: 1px solid rgba(217,79,79,0.3); }
+
+/* =============================================
+   PEDIDOS — STATS
+   ============================================= */
+.orders-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.order-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.order-stat-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.order-stat-icon svg { width: 18px; height: 18px; }
+.order-stat-icon.green { background: var(--green-dim); color: var(--green); }
+.order-stat-icon.gold  { background: rgba(201,160,48,0.12); color: var(--gold-dim); }
+.order-stat-icon.red   { background: rgba(217,79,79,0.1); color: var(--danger); }
+.order-stat-info strong {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.order-stat-info span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* =============================================
+   PEDIDOS — FILTROS
+   ============================================= */
+.orders-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.filter-btn {
+  padding: 0.45rem 1rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.filter-btn:hover { border-color: var(--green); color: var(--green); }
+.filter-btn.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+.filter-btn.active.gold  { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+.filter-btn.active.red   { background: var(--danger); border-color: var(--danger); color: #fff; }
+
+/* =============================================
+   PEDIDOS — ORDER CARD
+   ============================================= */
+.order-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 0.85rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), border-color var(--transition);
+  overflow: hidden;
+}
+.order-card:hover { box-shadow: var(--shadow-card); }
+.order-card.status-pending  { border-left-color: var(--gold); }
+.order-card.status-paid     { border-left-color: var(--green); }
+.order-card.status-cancelled{ border-left-color: var(--danger); }
+
+.order-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.order-card-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.order-customer-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+.order-id {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-family: monospace;
+  background: var(--bg-section);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+.order-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.order-card-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+.order-total {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+.order-status-select {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.6rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+.order-status-select:focus { outline: none; border-color: var(--green); }
+
+.order-card-body {
+  padding: 0 1.25rem 1rem;
+  border-top: 1px solid var(--border);
+  margin-top: 0;
+}
+.order-contact {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 0 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.order-contact span { display: flex; align-items: center; gap: 0.3rem; }
+.order-contact svg { width: 13px; height: 13px; flex-shrink: 0; }
+.order-items { display: flex; flex-direction: column; gap: 0.35rem; }
+.order-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--text-body);
+  padding: 0.3rem 0.75rem;
+  background: var(--bg-section);
+  border-radius: var(--radius);
+  gap: 0.5rem;
+}
+.order-item-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.order-item-lot {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.order-item-price {
+  font-weight: 700;
+  color: var(--text-heading);
+  white-space: nowrap;
+}
+.order-notes {
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 0.4rem 0.75rem;
+  border-left: 3px solid var(--border);
+}
 
 /* =============================================
    ADMIN PRODUCT ITEM (loja)

@@ -51,16 +51,47 @@
 
     <main class="admin-main">
       <div class="admin-page-title">
-        <h1 style="font-size:1.6rem;">Pedidos</h1>
-        <p style="color:var(--text-muted);font-size:0.88rem;margin:0;">Inscrições e compras realizadas na loja</p>
+        <h1>Pedidos</h1>
+        <p>Inscrições e compras realizadas na loja</p>
       </div>
 
-      <!-- Filtros de status -->
-      <div class="d-flex gap-1 flex-wrap mb-3">
-        <button class="year-btn active" data-filter="all">Todos</button>
-        <button class="year-btn" data-filter="pending">Aguardando Pagamento</button>
-        <button class="year-btn" data-filter="paid">Pagos</button>
-        <button class="year-btn" data-filter="cancelled">Cancelados</button>
+      <!-- Stats -->
+      <div class="orders-stats" id="orders-stats" style="display:none;">
+        <div class="order-stat-card">
+          <div class="order-stat-icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <div class="order-stat-info">
+            <strong id="stat-total">0</strong>
+            <span>Total de Pedidos</span>
+          </div>
+        </div>
+        <div class="order-stat-card">
+          <div class="order-stat-icon gold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <div class="order-stat-info">
+            <strong id="stat-revenue">R$ 0</strong>
+            <span>Receita Total</span>
+          </div>
+        </div>
+        <div class="order-stat-card">
+          <div class="order-stat-icon red">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="order-stat-info">
+            <strong id="stat-pending">0</strong>
+            <span>Aguardando Pagamento</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtros -->
+      <div class="orders-filters">
+        <button class="filter-btn active" data-filter="all">Todos</button>
+        <button class="filter-btn gold" data-filter="pending">Aguardando</button>
+        <button class="filter-btn" data-filter="paid">Pagos</button>
+        <button class="filter-btn red" data-filter="cancelled">Cancelados</button>
       </div>
 
       <div id="orders-list">
@@ -85,10 +116,19 @@
       const list = document.getElementById('orders-list');
       try {
         allOrders = await fetch('/api/admin/shop/orders').then(r => r.json());
+        renderStats();
         renderOrders();
+        document.getElementById('orders-stats').style.display = 'grid';
       } catch {
         list.innerHTML = '<p class="text-muted">Erro ao carregar pedidos.</p>';
       }
+    }
+
+    function renderStats() {
+      const paid = allOrders.filter(o => o.status === 'paid');
+      document.getElementById('stat-total').textContent = allOrders.length;
+      document.getElementById('stat-revenue').textContent = formatBRL(paid.reduce((s, o) => s + o.total, 0));
+      document.getElementById('stat-pending').textContent = allOrders.filter(o => o.status === 'pending').length;
     }
 
     function renderOrders() {
@@ -96,41 +136,48 @@
       const filtered = currentFilter === 'all' ? allOrders : allOrders.filter(o => o.status === currentFilter);
 
       if (!filtered.length) {
-        list.innerHTML = `<div class="empty-state"><p>Nenhum pedido ${currentFilter === 'all' ? '' : 'com este status'}.</p></div>`;
+        list.innerHTML = `<div class="empty-state"><p>Nenhum pedido${currentFilter === 'all' ? '' : ' com este status'}.</p></div>`;
         return;
       }
 
+      const statusLabels = { pending: 'Aguardando', paid: 'Pago', cancelled: 'Cancelado' };
+
       list.innerHTML = filtered.map(order => {
-        const statusLabels = { pending: 'Aguardando', paid: 'Pago', cancelled: 'Cancelado' };
-        const statusClass = { pending: 'status-pending', paid: 'status-paid', cancelled: 'status-cancelled' };
         const date = new Date(order.createdAt).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
 
-        const itemsHtml = (order.items||[]).map(i =>
-          `<div style="font-size:0.82rem;color:var(--text-muted);">• ${escapeHtml(i.productName)}${i.variantName ? ' – '+i.variantName : ''} (${escapeHtml(i.lotName)}) × ${i.quantity} = <strong style="color:var(--gold);">${formatBRL(i.price * i.quantity)}</strong></div>`
-        ).join('');
+        const itemsHtml = (order.items || []).map(i => `
+          <div class="order-item-row">
+            <span class="order-item-name">${escapeHtml(i.productName)}${i.variantName ? ' <em style="color:var(--text-muted)">– '+escapeHtml(i.variantName)+'</em>' : ''}</span>
+            <span class="order-item-lot">${escapeHtml(i.lotName)} × ${i.quantity}</span>
+            <span class="order-item-price">${formatBRL(i.price * i.quantity)}</span>
+          </div>`).join('');
 
         return `
-          <div class="admin-doc-item" style="flex-wrap:wrap;gap:0.75rem;align-items:flex-start;margin-bottom:0.75rem;">
-            <div style="flex:1;min-width:280px;">
-              <div class="d-flex align-center gap-2 mb-1" style="flex-wrap:wrap;">
-                <strong style="color:var(--white);font-size:0.92rem;">${escapeHtml(order.customer.name)}</strong>
-                <span class="status-badge ${statusClass[order.status]}">${statusLabels[order.status]}</span>
-                <span style="font-size:0.75rem;color:var(--text-muted);">#${order.id.slice(0,8).toUpperCase()}</span>
+          <div class="order-card status-${order.status}">
+            <div class="order-card-header">
+              <div class="order-card-left">
+                <span class="order-customer-name">${escapeHtml(order.customer.name)}</span>
+                <span class="status-badge status-${order.status}">${statusLabels[order.status]}</span>
+                <span class="order-id">#${order.id.slice(0,8).toUpperCase()}</span>
+                <span class="order-date">${date}</span>
               </div>
-              <div style="font-size:0.78rem;color:var(--text-muted);">
-                ${escapeHtml(order.customer.email)} · ${escapeHtml(order.customer.phone)} · Cap. ${escapeHtml(order.customer.chapter || '—')}
+              <div class="order-card-right">
+                <span class="order-total">${formatBRL(order.total)}</span>
+                <select class="order-status-select" onchange="updateStatus('${order.id}', this.value)">
+                  <option value="pending" ${order.status==='pending'?'selected':''}>Aguardando</option>
+                  <option value="paid"    ${order.status==='paid'   ?'selected':''}>Pago</option>
+                  <option value="cancelled" ${order.status==='cancelled'?'selected':''}>Cancelado</option>
+                </select>
               </div>
-              <div style="margin-top:0.5rem;">${itemsHtml}</div>
-              ${order.notes ? `<div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.3rem;">Obs: ${escapeHtml(order.notes)}</div>` : ''}
-              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.3rem;">${date}</div>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;min-width:160px;">
-              <div style="font-family:var(--font-heading);font-size:1.2rem;color:var(--gold);font-weight:700;">${formatBRL(order.total)}</div>
-              <select class="form-control" style="font-size:0.8rem;padding:0.3rem 0.6rem;width:auto;" onchange="updateStatus('${order.id}', this.value)">
-                <option value="pending" ${order.status==='pending'?'selected':''}>Aguardando</option>
-                <option value="paid" ${order.status==='paid'?'selected':''}>Pago</option>
-                <option value="cancelled" ${order.status==='cancelled'?'selected':''}>Cancelado</option>
-              </select>
+            <div class="order-card-body">
+              <div class="order-contact">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${escapeHtml(order.customer.email)}</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.01 1.17 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>${escapeHtml(order.customer.phone)}</span>
+                ${order.customer.chapter ? `<span>Cap. ${escapeHtml(order.customer.chapter)}</span>` : ''}
+              </div>
+              <div class="order-items">${itemsHtml}</div>
+              ${order.notes ? `<div class="order-notes">Obs: ${escapeHtml(order.notes)}</div>` : ''}
             </div>
           </div>`;
       }).join('');
@@ -148,9 +195,9 @@
     }
 
     // Filtros
-    document.querySelectorAll('[data-filter]').forEach(btn => {
+    document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentFilter = btn.dataset.filter;
         renderOrders();
