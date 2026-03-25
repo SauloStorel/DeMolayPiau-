@@ -1,191 +1,298 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contato – DeMolay Piauí</title>
-  <link rel="stylesheet" href="/css/main.css">
-  <link rel="stylesheet" href="/css/nav.css">
-  <style>
-    .contato-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      align-items: start;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contato – DeMolay Piauí</title>
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/nav.css" />
+    <style>
+      .contato-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: start;
+      }
 
-    .info-card {
-      background: var(--navy-mid);
-      border: 1px solid var(--navy-border);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-    }
+      .info-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-card);
+      }
 
-    .info-card h3 { margin-bottom: 1.5rem; font-size: 1.1rem; }
+      .info-card h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        color: var(--text-heading);
+      }
 
-    .info-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
+      .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
 
-    .info-item:last-child { margin-bottom: 0; }
+      .info-item:last-child {
+        margin-bottom: 0;
+      }
 
-    .info-icon {
-      width: 40px;
-      height: 40px;
-      background: rgba(201,168,76,0.1);
-      border: 1px solid var(--gold-dim);
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
+      .info-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(27, 122, 62, 0.1);
+        border: 1px solid var(--green-border);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
 
-    .info-icon svg { width: 20px; height: 20px; color: var(--gold); }
-    .info-item-text strong { display: block; font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
-    .info-item-text span, .info-item-text a { color: var(--white); font-size: 0.95rem; }
+      .info-icon svg {
+        width: 20px;
+        height: 20px;
+        color: var(--green);
+      }
+      .info-item-text strong {
+        display: block;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.2rem;
+      }
+      .info-item-text span,
+      .info-item-text a {
+        color: var(--text-body);
+        font-size: 0.95rem;
+      }
+      .info-item-text a:hover {
+        color: var(--green);
+      }
 
-    .contact-form-card {
-      background: var(--navy-mid);
-      border: 1px solid var(--navy-border);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-    }
+      .contact-form-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-card);
+      }
 
-    .contact-form-card h3 { margin-bottom: 1.5rem; font-size: 1.1rem; }
+      .contact-form-card h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        color: var(--text-heading);
+      }
 
-    .form-note {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 0.5rem;
-    }
+      .form-note {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+      }
 
-    @media (max-width: 768px) {
-      .contato-grid { grid-template-columns: 1fr; gap: 2rem; }
-    }
-  </style>
-</head>
-<body>
+      @media (max-width: 768px) {
+        .contato-grid {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="nav-placeholder"></div>
 
-  <div id="nav-placeholder"></div>
-
-  <div class="page-header">
-    <div class="container">
-      <p class="breadcrumb"><a href="/">Início</a> <span>/</span> Contato</p>
-      <h1>Entre em Contato</h1>
-      <p>Fale com o Gabinete Estadual da Jurisdição do Piauí</p>
+    <div class="page-header">
+      <div class="container">
+        <p class="breadcrumb"><a href="/">Início</a> <span>/</span> Contato</p>
+        <h1>Entre em Contato</h1>
+        <p>Fale com o Gabinete Estadual da Jurisdição do Piauí</p>
+      </div>
     </div>
-  </div>
 
-  <section class="section">
-    <div class="container contato-grid">
+    <section class="section">
+      <div class="container contato-grid">
+        <div>
+          <div class="info-card">
+            <h3>Informações de Contato</h3>
 
-      <div>
-        <div class="info-card">
-          <h3>Informações de Contato</h3>
-
-          <div class="info-item">
-            <div class="info-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                <polyline points="22,6 12,13 2,6"/>
-              </svg>
+            <div class="info-item">
+              <div class="info-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <path
+                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                  />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+              </div>
+              <div class="info-item-text">
+                <strong>E-mail</strong>
+                <a href="mailto:contato@demolaypiaui.org.br"
+                  >demolaypiaui@gmail.com</a
+                >
+              </div>
             </div>
-            <div class="info-item-text">
-              <strong>E-mail</strong>
-              <a href="mailto:contato@demolaypiaui.org.br">contato@demolaypiaui.org.br</a>
+
+            <div class="info-item">
+              <div class="info-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              </div>
+              <div class="info-item-text">
+                <strong>Endereço</strong>
+                <span>Teresina, Piauí — Brasil</span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+              </div>
+              <div class="info-item-text">
+                <strong>Portal</strong>
+                <span>demolaypiaui.org.br</span>
+              </div>
             </div>
           </div>
 
-          <div class="info-item">
-            <div class="info-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                <circle cx="12" cy="10" r="3"/>
+          <div class="info-card" style="margin-top: 1.5rem">
+            <h3>Área Administrativa</h3>
+            <p
+              style="
+                color: var(--text-muted);
+                font-size: 0.9rem;
+                margin-bottom: 1.25rem;
+              "
+            >
+              Acesso exclusivo para administradores autorizados. Permite
+              publicar e gerenciar os documentos oficiais da jurisdição.
+            </p>
+            <a
+              href="/admin/index.html"
+              class="btn btn-outline-green w-full"
+              style="justify-content: center"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                width="16"
+                height="16"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
-            </div>
-            <div class="info-item-text">
-              <strong>Endereço</strong>
-              <span>Teresina, Piauí — Brasil</span>
-            </div>
-          </div>
-
-          <div class="info-item">
-            <div class="info-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                <line x1="8" y1="21" x2="16" y2="21"/>
-                <line x1="12" y1="17" x2="12" y2="21"/>
-              </svg>
-            </div>
-            <div class="info-item-text">
-              <strong>Portal</strong>
-              <span>demolaypiaui.org.br</span>
-            </div>
+              Acessar Painel Administrativo
+            </a>
           </div>
         </div>
 
-        <div class="info-card" style="margin-top:1.5rem;">
-          <h3>Área Administrativa</h3>
-          <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.25rem;">
-            Acesso exclusivo para administradores autorizados. Permite publicar e gerenciar os documentos oficiais da jurisdição.
-          </p>
-          <a href="/admin/index.html" class="btn btn-outline w-full" style="justify-content:center;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-            Acessar Painel Administrativo
-          </a>
+        <div class="contact-form-card">
+          <h3>Enviar Mensagem</h3>
+          <form id="contactForm">
+            <div class="form-group">
+              <label for="nome">Nome completo</label>
+              <input
+                type="text"
+                id="nome"
+                name="nome"
+                class="form-control"
+                placeholder="Seu nome"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="email">E-mail</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-control"
+                placeholder="seu@email.com"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="assunto">Assunto</label>
+              <input
+                type="text"
+                id="assunto"
+                name="assunto"
+                class="form-control"
+                placeholder="Assunto da mensagem"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="mensagem">Mensagem</label>
+              <textarea
+                id="mensagem"
+                name="mensagem"
+                class="form-control"
+                rows="5"
+                placeholder="Escreva sua mensagem..."
+                required
+                style="resize: vertical"
+              ></textarea>
+            </div>
+            <div id="form-msg"></div>
+            <button
+              type="submit"
+              class="btn btn-primary w-full"
+              style="justify-content: center"
+            >
+              Enviar Mensagem
+            </button>
+            <p class="form-note">
+              Ao enviar, seu cliente de e-mail será aberto com a mensagem
+              pré-preenchida.
+            </p>
+          </form>
         </div>
       </div>
+    </section>
 
-      <div class="contact-form-card">
-        <h3>Enviar Mensagem</h3>
-        <form id="contactForm">
-          <div class="form-group">
-            <label for="nome">Nome completo</label>
-            <input type="text" id="nome" name="nome" class="form-control" placeholder="Seu nome" required>
-          </div>
-          <div class="form-group">
-            <label for="email">E-mail</label>
-            <input type="email" id="email" name="email" class="form-control" placeholder="seu@email.com" required>
-          </div>
-          <div class="form-group">
-            <label for="assunto">Assunto</label>
-            <input type="text" id="assunto" name="assunto" class="form-control" placeholder="Assunto da mensagem" required>
-          </div>
-          <div class="form-group">
-            <label for="mensagem">Mensagem</label>
-            <textarea id="mensagem" name="mensagem" class="form-control" rows="5" placeholder="Escreva sua mensagem..." required style="resize:vertical;"></textarea>
-          </div>
-          <div id="form-msg"></div>
-          <button type="submit" class="btn btn-primary w-full" style="justify-content:center;">
-            Enviar Mensagem
-          </button>
-          <p class="form-note">Ao enviar, seu cliente de e-mail será aberto com a mensagem pré-preenchida.</p>
-        </form>
-      </div>
+    <div id="footer-placeholder"></div>
 
-    </div>
-  </section>
-
-  <div id="footer-placeholder"></div>
-
-  <script src="/js/nav.js"></script>
-  <script>
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const nome = document.getElementById('nome').value;
-      const email = document.getElementById('email').value;
-      const assunto = document.getElementById('assunto').value;
-      const mensagem = document.getElementById('mensagem').value;
-      const body = `Nome: ${nome}\nE-mail: ${email}\n\n${mensagem}`;
-      window.location.href = `mailto:contato@demolaypiaui.org.br?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(body)}`;
-    });
-  </script>
-</body>
+    <script src="/js/nav.js"></script>
+    <script>
+      document
+        .getElementById("contactForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const nome = document.getElementById("nome").value;
+          const email = document.getElementById("email").value;
+          const assunto = document.getElementById("assunto").value;
+          const mensagem = document.getElementById("mensagem").value;
+          const body = `Nome: ${nome}\nE-mail: ${email}\n\n${mensagem}`;
+          window.location.href = `mailto:contato@demolaypiaui.org.br?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(body)}`;
+        });
+    </script>
+  </body>
 </html>

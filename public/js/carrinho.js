@@ -83,7 +83,7 @@ function renderCart() {
             Dados do Participante
           </h3>
           <div id="checkout-msg"></div>
-          <form id="checkoutForm">
+          <form id="checkoutForm" novalidate>
             <div class="checkout-grid-2">
               <div class="form-group">
                 <label for="c-nome">Nome completo *</label>
@@ -167,6 +167,11 @@ function attachCartEvents() {
 
   // Checkout
   document.getElementById('checkoutForm')?.addEventListener('submit', handleCheckout);
+
+  // Remove estado de erro ao digitar no campo
+  document.querySelectorAll('#checkoutForm .form-control').forEach(el => {
+    el.addEventListener('input', () => el.classList.remove('is-invalid'));
+  });
 }
 
 async function handleCheckout(e) {
@@ -186,15 +191,30 @@ async function handleCheckout(e) {
   };
   const notes = document.getElementById('c-notes').value.trim();
 
+  // Limpa estados de erro anteriores
+  document.querySelectorAll('.form-control.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
   // Validação de campos obrigatórios
-  if (!customer.name || !customer.email || !customer.phone || !customer.chapter) {
+  const fieldMap = { name: 'c-nome', email: 'c-email', phone: 'c-phone', chapter: 'c-chapter' };
+  let firstInvalid = null;
+  for (const [key, id] of Object.entries(fieldMap)) {
+    if (!customer[key]) {
+      const el = document.getElementById(id);
+      el.classList.add('is-invalid');
+      firstInvalid = firstInvalid || el;
+    }
+  }
+  if (firstInvalid) {
     msgEl.innerHTML = `<div class="alert alert-error">Preencha todos os campos obrigatórios.</div>`;
+    firstInvalid.focus();
     btn.disabled = false;
     btn.textContent = 'Confirmar Pedido';
     return;
   }
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRe.test(customer.email)) {
+    document.getElementById('c-email').classList.add('is-invalid');
+    document.getElementById('c-email').focus();
     msgEl.innerHTML = `<div class="alert alert-error">Informe um e-mail válido.</div>`;
     btn.disabled = false;
     btn.textContent = 'Confirmar Pedido';

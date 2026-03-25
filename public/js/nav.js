@@ -1,5 +1,7 @@
 /* Carrega nav e footer via fetch e ativa comportamentos */
 document.addEventListener('DOMContentLoaded', async () => {
+  initScrollTop();
+  initCounters();
   // Injeta nav
   const navPlaceholder = document.getElementById('nav-placeholder');
   const footerPlaceholder = document.getElementById('footer-placeholder');
@@ -9,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const res = await fetch('/partials/nav.html');
       navPlaceholder.innerHTML = await res.text();
       initNav();
+      if (typeof updateCartBadge === 'function') updateCartBadge();
     }
     if (footerPlaceholder) {
       const res = await fetch('/partials/footer.html');
@@ -18,6 +21,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.warn('Erro ao carregar partials:', e);
   }
 });
+
+function initScrollTop() {
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('scroll-top');
+    if (btn) btn.classList.toggle('visible', window.scrollY > 300);
+  });
+}
+
+function initCounters() {
+  const targets = document.querySelectorAll('.stat-item h3[data-target]');
+  if (!targets.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseInt(el.dataset.target, 10);
+      const duration = 1200;
+      const start = performance.now();
+      observer.unobserve(el);
+
+      function step(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        el.textContent = Math.round(eased * target);
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }, { threshold: 0.5 });
+
+  targets.forEach(el => observer.observe(el));
+}
 
 function initNav() {
   const nav = document.getElementById('site-nav');

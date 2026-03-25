@@ -210,9 +210,49 @@ p:last-child { margin-bottom: 0; }
 /* =============================================
    ALERTS
    ============================================= */
-.alert { padding: 0.85rem 1.2rem; border-radius: var(--radius); font-size: 0.92rem; margin-bottom: 1rem; }
-.alert-error   { background: rgba(217,79,79,0.12); border: 1px solid var(--danger); color: #B03030; }
-.alert-success { background: var(--green-dim); border: 1px solid var(--green-border); color: var(--green); }
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--radius);
+  border-left: 4px solid transparent;
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.55;
+  margin-bottom: 1rem;
+  animation: alertIn 0.2s ease;
+}
+@keyframes alertIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.alert::before {
+  content: '';
+  flex-shrink: 0;
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.alert-error {
+  background: #FEF2F2;
+  border-left-color: #DC2626;
+  color: #991B1B;
+}
+.alert-error::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23DC2626' stroke-width='2.5'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='15' y1='9' x2='9' y2='15'/%3E%3Cline x1='9' y1='9' x2='15' y2='15'/%3E%3C/svg%3E");
+}
+.alert-success {
+  background: #F0FDF4;
+  border-left-color: #16A34A;
+  color: #166534;
+}
+.alert-success::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316A34A' stroke-width='2.5'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpolyline points='9 12 11 14 15 10'/%3E%3C/svg%3E");
+}
 
 /* =============================================
    FORMULÁRIOS
@@ -241,6 +281,8 @@ p:last-child { margin-bottom: 0; }
 }
 .form-control:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(27,122,62,0.12); }
 .form-control::placeholder { color: var(--text-muted); }
+.form-control.is-invalid { border-color: #DC2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.1); }
+.form-control.is-invalid:focus { border-color: #DC2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.15); }
 
 /* =============================================
    DIVIDERS
@@ -302,6 +344,37 @@ p:last-child { margin-bottom: 0; }
 .flex-wrap    { flex-wrap: wrap; }
 .justify-between { justify-content: space-between; }
 .w-full { width: 100%; }
+
+/* =============================================
+   SCROLL TO TOP
+   ============================================= */
+#scroll-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 44px;
+  height: 44px;
+  background: var(--green);
+  border: 2px solid var(--gold);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(10,34,64,0.2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease, background 0.2s ease;
+  z-index: 998;
+}
+#scroll-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+#scroll-top:hover { background: var(--green-light); }
 
 /* =============================================
    RESPONSIVO

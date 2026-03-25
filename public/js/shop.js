@@ -137,7 +137,7 @@ function updateCartBadge() {
   const count = getCartCount();
   document.querySelectorAll('.cart-badge').forEach(el => {
     el.textContent = count;
-    el.style.display = count > 0 ? '' : 'none';
+    el.style.display = count > 0 ? 'flex' : 'none';
   });
   document.querySelectorAll('.cart-total-nav').forEach(el => {
     el.textContent = count > 0 ? formatBRL(getCartTotal()) : '';

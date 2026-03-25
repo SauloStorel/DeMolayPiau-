@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -84,14 +83,6 @@ app.use(session({
   cookie: { secure: false, maxAge: 8 * 60 * 60 * 1000 } // 8 horas
 }));
 
-// Rate limiting no login: máx 10 tentativas por 15 minutos por IP
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: { error: 'Muitas tentativas de login. Tente novamente em 15 minutos.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
 
 // Servir arquivos estáticos públicos
 app.use(express.static(path.join(__dirname, 'public')));
@@ -115,7 +106,7 @@ function requireAuth(req, res, next) {
 // AUTH ROUTES
 // ─────────────────────────────────────────────
 
-app.post('/api/auth/login', loginLimiter, (req, res) => {
+app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   if (
     email === process.env.ADMIN_USER &&
