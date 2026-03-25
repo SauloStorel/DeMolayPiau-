@@ -61,6 +61,7 @@
 .nav-dropdown:hover > a svg { transform: rotate(180deg); }
 
 .dropdown-menu {
+  list-style: none;
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
