@@ -5,7 +5,7 @@
   min-height: 100vh;
   display: flex; align-items: center; justify-content: center;
   padding: 2rem;
-  background: linear-gradient(160deg, var(--bg-dark) 0%, #0D3520 50%, var(--navy) 100%);
+  background: linear-gradient(160deg, var(--bg-dark) 0%, #0D3520 50%, var(--green) 100%);
   position: relative;
 }
 .login-page::before {
@@ -44,8 +44,8 @@
 
 /* Sidebar */
 .admin-sidebar {
-  background: var(--navy);
-  border-right: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, var(--green) 0%, #145C2E 100%);
+  border-right: 1px solid rgba(255,255,255,0.1);
   padding: 2rem 0;
   position: sticky; top: 68px;
   height: calc(100vh - 68px);
@@ -71,8 +71,8 @@
 .sidebar-nav li a:hover,
 .sidebar-nav li a.active {
   color: var(--gold-light);
-  background: rgba(27,122,62,0.2);
-  border-right-color: var(--green);
+  background: rgba(0,0,0,0.15);
+  border-right-color: var(--gold);
 }
 .sidebar-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 0.75rem 0; }
 .sidebar-user { padding: 0.75rem 1.25rem; font-size: 0.75rem; color: rgba(255,255,255,0.35); }
