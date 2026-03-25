@@ -87,18 +87,34 @@
 .nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* Ícone carrinho */
+.cart-nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cart-total-nav {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  font-family: var(--font-price);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
 .cart-badge {
   background: var(--gold);
   color: var(--navy);
   border-radius: 50%;
   width: 18px; height: 18px;
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 700;
   display: none;
   align-items: center;
   justify-content: center;
   position: absolute;
-  top: -4px; right: -6px;
+  top: -6px; right: -8px;
 }
 
 /* =============================================
