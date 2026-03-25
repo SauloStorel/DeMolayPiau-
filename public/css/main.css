@@ -75,6 +75,22 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  animation: pageEnter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+body.page-exit {
+  animation: pageExit 0.28s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pageExit {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-10px); }
 }
 
 img { max-width: 100%; height: auto; display: block; }
@@ -139,14 +155,6 @@ a:hover { color: var(--green); }
 .stagger-children.visible > *:nth-child(6) { transition-delay: 0.3s; }
 .stagger-children.visible > *:nth-child(7) { transition-delay: 0.35s; }
 
-/* Page fade in — aplicado no main wrapper, não no body inteiro */
-.page-fadein {
-  animation: pageIn 0.4s ease;
-}
-@keyframes pageIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
 
 /* =============================================
    TIPOGRAFIA
@@ -200,13 +208,30 @@ p:last-child { margin-bottom: 0; }
   border-radius: var(--radius-lg);
   padding: 1.75rem;
   box-shadow: var(--shadow-card);
-  transition: transform var(--transition-slow), box-shadow var(--transition-slow), border-color var(--transition);
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color var(--transition);
   position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--green), var(--gold));
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-radius: 3px 0 0 3px;
 }
 .card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
   box-shadow: var(--shadow-hover);
-  border-color: var(--green);
+  border-color: var(--green-border);
+}
+.card:hover::before {
+  transform: scaleY(1);
 }
 
 /* =============================================
@@ -223,9 +248,27 @@ p:last-child { margin-bottom: 0; }
   font-weight: 600;
   cursor: pointer;
   border: none;
-  transition: background var(--transition), color var(--transition), transform var(--transition), box-shadow var(--transition);
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s ease, color 0.3s ease,
+              transform 0.2s ease, box-shadow 0.3s ease;
+}
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.18);
+  opacity: 0;
+  transform: scale(0.6);
+  border-radius: inherit;
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 .btn:active { transform: scale(0.97); }
+.btn:active::after {
+  opacity: 1;
+  transform: scale(1);
+  transition: none;
+}
 
 .btn-primary {
   background: linear-gradient(135deg, var(--green) 0%, #1A8F48 100%);

@@ -1,5 +1,6 @@
 /* Carrega nav e footer via fetch e ativa comportamentos */
 document.addEventListener('DOMContentLoaded', async () => {
+  initPageTransitions();
   initScrollTop();
   initCounters();
   initScrollReveal();
@@ -144,5 +145,34 @@ function initNav() {
         links.classList.remove('open');
       }
     });
+  });
+}
+
+function initPageTransitions() {
+  // Intercepta cliques em links internos e anima a saída
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+
+    const href = a.getAttribute('href');
+    // Ignora: externos, âncoras, admin, javascript:, target=_blank
+    if (
+      !href ||
+      href.startsWith('http') ||
+      href.startsWith('//') ||
+      href.startsWith('#') ||
+      href.startsWith('javascript') ||
+      href.startsWith('mailto') ||
+      a.target === '_blank' ||
+      href.startsWith('/admin')
+    ) return;
+
+    // Mesma página — ignora
+    const dest = new URL(href, window.location.href);
+    if (dest.pathname === window.location.pathname && !dest.search) return;
+
+    e.preventDefault();
+    document.body.classList.add('page-exit');
+    setTimeout(() => { window.location.href = href; }, 280);
   });
 }
