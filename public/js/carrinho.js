@@ -10,14 +10,22 @@ function renderCart() {
 
   if (!cart.length) {
     section.innerHTML = `
-      <div class="empty-state">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="56" height="56">
-          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <path d="M16 10a4 4 0 01-8 0"/>
-        </svg>
-        <p>Seu carrinho está vazio.</p>
-        <a href="/loja.html" class="btn btn-primary mt-2">Ver Produtos</a>
+      <div class="empty-state" style="padding:5rem 1rem;">
+        <div style="width:80px;height:80px;border-radius:50%;background:var(--green-dim);border:2px solid var(--green-border);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" width="36" height="36">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+        </div>
+        <h3 style="font-size:1.2rem;margin-bottom:0.5rem;color:var(--text-heading);">Carrinho vazio</h3>
+        <p style="color:var(--text-muted);margin-bottom:1.5rem;">Você ainda não adicionou nenhum item ao carrinho.</p>
+        <a href="/loja.html" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          Explorar Produtos
+        </a>
       </div>`;
     return;
   }
@@ -118,17 +126,26 @@ function renderCart() {
 
       <div>
         <div class="cart-summary">
-          <h3>Resumo do Pedido</h3>
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="color:var(--green);">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+              <rect x="9" y="3" width="6" height="4" rx="1"/>
+            </svg>
+            Resumo do Pedido
+          </h3>
           ${cart.map(i => `
             <div class="cart-summary-row">
-              <span>${escapeHtml(i.productName)} ×${i.quantity}</span>
-              <span>${formatBRL(i.price * i.quantity)}</span>
+              <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(i.productName)} <strong style="color:var(--text-heading);">×${i.quantity}</strong></span>
+              <span style="margin-left:0.75rem;">${formatBRL(i.price * i.quantity)}</span>
             </div>`).join('')}
           <div class="cart-summary-total cart-summary-row">
             <span>Total</span>
             <span>${formatBRL(total)}</span>
           </div>
-          <div style="margin-top:1rem;font-size:0.78rem;color:var(--text-muted);line-height:1.5;">
+          <div style="margin-top:1.25rem;font-size:0.78rem;color:var(--text-muted);line-height:1.5;padding:0.75rem;background:var(--bg-section);border-radius:var(--radius);border:1px solid var(--border);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="color:var(--gold);vertical-align:-2px;margin-right:0.3rem;">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
             Preencha seus dados e confirme o pedido. As instruções de pagamento serão exibidas após a confirmação.
           </div>
         </div>
