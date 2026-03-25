@@ -104,6 +104,21 @@
 .sidebar-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 0.75rem 0; }
 .sidebar-user { padding: 0.75rem 1.25rem; font-size: 0.75rem; color: rgba(255,255,255,0.35); }
 
+.sidebar-credit {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.25);
+  margin-top: auto;
+  line-height: 1.5;
+}
+.sidebar-credit a {
+  color: var(--gold-light);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.sidebar-credit a:hover { color: #fff; }
+
 /* Admin Main */
 .admin-main { padding: 2rem 2.5rem; overflow-y: auto; }
 .admin-page-title { margin-bottom: 1.75rem; }
