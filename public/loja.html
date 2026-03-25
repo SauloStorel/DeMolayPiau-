@@ -55,7 +55,9 @@
 
         container.innerHTML = `
           <p class="text-muted mb-3" style="font-size:0.88rem;">${products.length} produto(s) disponível(is)</p>
-          <div class="shop-grid">${products.map(buildProductCard).join('')}</div>`;
+          <div class="shop-grid stagger-children">${products.map(buildProductCard).join('')}</div>`;
+        // Trigger reveal for dynamically loaded content
+        if (typeof initScrollReveal === 'function') initScrollReveal();
       } catch {
         container.innerHTML = '<p class="text-muted text-center">Erro ao carregar produtos.</p>';
       }

@@ -3,17 +3,22 @@
    ============================================= */
 .year-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
 .year-btn {
-  padding: 0.4rem 1rem;
+  padding: 0.4rem 1.1rem;
   border-radius: 20px;
   border: 1.5px solid var(--border);
   background: var(--white);
   color: var(--text-muted);
   font-size: 0.85rem; font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all 0.25s ease;
 }
-.year-btn:hover { border-color: var(--green); color: var(--green); }
-.year-btn.active { background: var(--green); border-color: var(--green); color: #fff; }
+.year-btn:hover { border-color: var(--green); color: var(--green); transform: translateY(-1px); }
+.year-btn.active {
+  background: linear-gradient(135deg, var(--green), #1A8F48);
+  border-color: var(--green);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(27,122,62,0.25);
+}
 
 /* =============================================
    DOCUMENTO CARD
@@ -27,9 +32,13 @@
   align-items: center;
   gap: 1.25rem;
   box-shadow: var(--shadow-sm);
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition: border-color var(--transition), box-shadow 0.3s ease, transform 0.3s ease;
 }
-.doc-card:hover { border-color: var(--green); box-shadow: 0 4px 16px rgba(27,122,62,0.1); }
+.doc-card:hover {
+  border-color: var(--green);
+  box-shadow: 0 6px 20px rgba(27,122,62,0.12);
+  transform: translateX(4px);
+}
 
 .doc-icon {
   flex-shrink: 0;
@@ -78,14 +87,24 @@
    PRESTAÇÃO DE CONTAS
    ============================================= */
 .prestacao-intro {
-  background: var(--bg-card);
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(27,122,62,0.03) 100%);
   border: 1px solid var(--border);
   border-left: 4px solid var(--green);
-  border-radius: var(--radius);
-  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
   margin-bottom: 2.5rem;
+  position: relative;
+  overflow: hidden;
 }
-.prestacao-intro p { color: var(--text-muted); margin: 0; font-size: 0.95rem; }
+.prestacao-intro::after {
+  content: '';
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 100px; height: 100px;
+  background: radial-gradient(circle, rgba(27,122,62,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.prestacao-intro p { color: var(--text-muted); margin: 0; font-size: 0.95rem; position: relative; }
 
 /* =============================================
    RESPONSIVO

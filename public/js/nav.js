@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
   initScrollTop();
   initCounters();
+  initScrollReveal();
   // Injeta nav
   const navPlaceholder = document.getElementById('nav-placeholder');
   const footerPlaceholder = document.getElementById('footer-placeholder');
@@ -53,6 +54,22 @@ function initCounters() {
   }, { threshold: 0.5 });
 
   targets.forEach(el => observer.observe(el));
+}
+
+function initScrollReveal() {
+  const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger-children');
+  if (!revealEls.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  revealEls.forEach(el => observer.observe(el));
 }
 
 function initNav() {

@@ -38,6 +38,14 @@
     </div>
   </section>
 
+  <!-- ── WAVE ─────────────────────────────── -->
+  <div class="wave-divider" style="background:linear-gradient(160deg, var(--bg-dark) 0%, #0D3520 100%);">
+    <svg viewBox="0 0 1440 60" preserveAspectRatio="none" fill="var(--green)">
+      <path d="M0,20 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" opacity="0.5"/>
+      <path d="M0,35 C480,5 960,55 1440,25 L1440,60 L0,60 Z"/>
+    </svg>
+  </div>
+
   <!-- ── STATS ─────────────────────────────── -->
   <div class="stats-strip">
     <div class="container">
@@ -65,40 +73,54 @@
   <!-- ── SOBRE (resumo) ─────────────────────── -->
   <section class="section about-strip">
     <div class="container about-strip-inner">
-      <div class="about-strip-text">
+      <div class="about-strip-text reveal-left">
         <span class="badge badge-gold" style="margin-bottom:1rem;">Quem Somos</span>
         <h2>A Ordem DeMolay no Piauí</h2>
         <p>A Ordem DeMolay é uma organização juvenil maçônica que forma jovens de caráter por meio do desenvolvimento de virtudes, liderança e serviço comunitário.</p>
         <p>Nossa jurisdição piauiense é responsável pelos capítulos instalados no estado, coordenando as atividades do Gabinete Estadual e do Grande Conselho Estadual.</p>
         <a href="/sobre.html" class="btn btn-outline mt-2">Saiba mais</a>
       </div>
-      <div class="about-pillars">
+      <div class="about-pillars stagger-children reveal-right">
         <div class="pillar-card">
-          <div class="pillar-icon">❤️</div>
+          <div class="pillar-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" width="20" height="20"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
           <h4>Amor Filial</h4>
         </div>
         <div class="pillar-card">
-          <div class="pillar-icon">🙏</div>
-          <h4>Reverência pelas Coisas Sagradas</h4>
+          <div class="pillar-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <h4>Reverência</h4>
         </div>
         <div class="pillar-card">
-          <div class="pillar-icon">🎩</div>
+          <div class="pillar-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" width="20" height="20"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
           <h4>Cortesia</h4>
         </div>
         <div class="pillar-card">
-          <div class="pillar-icon">🤝</div>
+          <div class="pillar-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" width="20" height="20"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          </div>
           <h4>Companheirismo</h4>
         </div>
         <div class="pillar-card">
-          <div class="pillar-icon">🛡️</div>
+          <div class="pillar-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
           <h4>Fidelidade</h4>
         </div>
         <div class="pillar-card">
-          <div class="pillar-icon">✨</div>
+          <div class="pillar-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" width="20" height="20"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
           <h4>Pureza</h4>
         </div>
         <div class="pillar-card" style="grid-column: 2;">
-          <div class="pillar-icon">🇧🇷</div>
+          <div class="pillar-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" width="20" height="20"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          </div>
           <h4>Patriotismo</h4>
         </div>
       </div>
@@ -108,7 +130,7 @@
   <!-- ── DOCUMENTOS RECENTES ─────────────────── -->
   <section class="section recent-docs-section" id="documentos">
     <div class="container">
-      <div class="section-title">
+      <div class="section-title reveal">
         <h2>Documentos Recentes</h2>
         <p>Últimos documentos publicados pelo Gabinete e Grande Conselho Estadual</p>
       </div>
@@ -125,7 +147,7 @@
   <!-- ── TRANSPARÊNCIA ─────────────────────── -->
   <section class="section-sm">
     <div class="container">
-      <div class="transparency-strip">
+      <div class="transparency-strip reveal-scale">
         <span class="badge badge-gold" style="margin-bottom:1rem;background:rgba(201,160,48,0.25);color:var(--gold-light);border-color:rgba(201,160,48,0.6);">Transparência</span>
         <h2>Prestação de Contas</h2>
         <p>A Ordem DeMolay Piauiense publica regularmente sua prestação de contas, reforçando nosso compromisso com a transparência e a gestão responsável dos recursos.</p>

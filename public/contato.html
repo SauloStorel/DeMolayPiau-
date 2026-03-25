@@ -22,6 +22,11 @@
         border-radius: var(--radius-lg);
         padding: 2rem;
         box-shadow: var(--shadow-card);
+        transition: border-color var(--transition), box-shadow 0.3s ease;
+      }
+      .info-card:hover {
+        border-color: var(--green);
+        box-shadow: var(--shadow-hover);
       }
 
       .info-card h3 {
@@ -42,15 +47,20 @@
       }
 
       .info-icon {
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         background: rgba(27, 122, 62, 0.1);
         border: 1px solid var(--green-border);
-        border-radius: var(--radius);
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        transition: transform 0.3s ease, background 0.3s ease;
+      }
+      .info-item:hover .info-icon {
+        transform: scale(1.1);
+        background: rgba(27, 122, 62, 0.18);
       }
 
       .info-icon svg {
@@ -81,6 +91,15 @@
         border-radius: var(--radius-lg);
         padding: 2rem;
         box-shadow: var(--shadow-card);
+        position: relative;
+        overflow: hidden;
+      }
+      .contact-form-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--green), var(--gold));
       }
 
       .contact-form-card h3 {
@@ -116,7 +135,7 @@
 
     <section class="section">
       <div class="container contato-grid">
-        <div>
+        <div class="reveal-left">
           <div class="info-card">
             <h3>Informações de Contato</h3>
 
@@ -213,7 +232,7 @@
           </div>
         </div>
 
-        <div class="contact-form-card">
+        <div class="contact-form-card reveal-right">
           <h3>Enviar Mensagem</h3>
           <form id="contactForm">
             <div class="form-group">
