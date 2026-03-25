@@ -1,0 +1,312 @@
+/* =============================================
+   VARIÁVEIS & RESET
+   ============================================= */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&family=Montserrat:wght@600;700;800&display=swap');
+
+:root {
+  /* ── Piauí: azul escuro, verde, amarelo/ouro, branco ── */
+  --navy:         #0A2240;   /* azul escuro – DeMolay */
+  --navy-mid:     #0D2D56;   /* azul médio */
+  --navy-light:   #1A4080;   /* azul mais claro */
+  --navy-border:  #1A4080;
+
+  --green:        #1B7A3E;   /* verde Piauí */
+  --green-light:  #22A050;
+  --green-dim:    rgba(27,122,62,0.18);
+  --green-border: rgba(27,122,62,0.4);
+
+  --gold:         #C9A030;   /* amarelo/ouro */
+  --gold-light:   #E8C050;
+  --gold-dim:     #8A6820;
+  --gold-bg:      rgba(201,160,48,0.18);
+
+  /* ── Superfícies (tema claro) ── */
+  --bg:           #F4F7FB;   /* fundo branco-azulado */
+  --bg-card:      #FFFFFF;   /* cards brancos */
+  --bg-section:   #EBF0F8;   /* seção alternada */
+  --bg-dark:      #071829;   /* hero / header escuro */
+
+  /* ── Texto ── */
+  --text-heading: #071829;   /* títulos */
+  --text-body:    #2C3E50;   /* corpo */
+  --text-muted:   #607080;   /* texto secundário */
+  --white:        #FFFFFF;
+
+  /* ── Bordas ── */
+  --border:       #D0DCEA;
+  --border-dark:  #B0C4DE;
+
+  /* ── Estado / Feedback ── */
+  --danger:       #D94F4F;
+  --success:      #22A050;
+
+  /* ── Tipografia ── */
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body:    'Source Sans 3', 'Segoe UI', sans-serif;
+  --font-price:   'Montserrat', 'Segoe UI', sans-serif;
+
+  /* ── Sombras ── */
+  --shadow-sm:   0 1px 4px rgba(10,34,64,0.08);
+  --shadow-card: 0 4px 16px rgba(10,34,64,0.10);
+  --shadow-hover:0 8px 32px rgba(10,34,64,0.16);
+  --radius:      6px;
+  --radius-lg:   10px;
+  --transition:  0.2s ease;
+
+  /* Aliases para compatibilidade com código anterior */
+  --navy-border:  var(--border);
+  --text-muted:   #607080;
+  --piaui-green:        var(--green);
+  --piaui-green-light:  var(--green-light);
+  --piaui-green-dim:    var(--green-dim);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  background: var(--bg);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--navy); text-decoration: none; transition: color var(--transition); }
+a:hover { color: var(--green); }
+
+/* =============================================
+   TIPOGRAFIA
+   ============================================= */
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  color: var(--text-heading);
+  line-height: 1.25;
+}
+
+h1 { font-size: clamp(1.8rem, 4vw, 3rem); }
+h2 { font-size: clamp(1.4rem, 3vw, 2.2rem); }
+h3 { font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
+
+p { margin-bottom: 1rem; }
+p:last-child { margin-bottom: 0; }
+
+/* =============================================
+   LAYOUT
+   ============================================= */
+.container { max-width: 1140px; margin: 0 auto; padding: 0 1.5rem; }
+.section    { padding: 5rem 0; }
+.section-sm { padding: 3rem 0; }
+
+.section-title { text-align: center; margin-bottom: 3rem; }
+.section-title h2 { position: relative; display: inline-block; padding-bottom: 0.75rem; }
+.section-title h2::after {
+  content: '';
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 56px; height: 3px;
+  background: linear-gradient(90deg, var(--green), var(--gold));
+  border-radius: 2px;
+}
+.section-title p { color: var(--text-muted); margin-top: 0.75rem; font-size: 1.05rem; }
+
+/* =============================================
+   CARDS
+   ============================================= */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+/* =============================================
+   BOTÕES
+   ============================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background var(--transition), color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--green);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--green-light); color: #fff; box-shadow: 0 4px 12px rgba(27,122,62,0.3); }
+
+.btn-gold {
+  background: var(--gold);
+  color: var(--navy);
+}
+.btn-gold:hover { background: var(--gold-light); color: var(--navy); }
+
+.btn-navy {
+  background: var(--navy);
+  color: #fff;
+}
+.btn-navy:hover { background: var(--navy-mid); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--navy);
+  border: 1.5px solid var(--navy);
+}
+.btn-outline:hover { background: var(--navy); color: #fff; }
+
+.btn-outline-green {
+  background: transparent;
+  color: var(--green);
+  border: 1.5px solid var(--green);
+}
+.btn-outline-green:hover { background: var(--green); color: #fff; }
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1.5px solid var(--danger);
+  font-size: 0.85rem;
+  padding: 0.4rem 0.9rem;
+}
+.btn-danger:hover { background: var(--danger); color: #fff; }
+
+.btn-sm { font-size: 0.85rem; padding: 0.45rem 1rem; }
+
+/* =============================================
+   GRID
+   ============================================= */
+.grid   { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+
+/* =============================================
+   BADGE
+   ============================================= */
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.badge-gold  { background: rgba(201,160,48,0.18); color: #6B4F00; border: 1px solid rgba(201,160,48,0.5); }
+.badge-green { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
+.badge-blue  { background: rgba(10,34,64,0.12); color: var(--navy); border: 1px solid var(--border-dark); }
+
+/* =============================================
+   ALERTS
+   ============================================= */
+.alert { padding: 0.85rem 1.2rem; border-radius: var(--radius); font-size: 0.92rem; margin-bottom: 1rem; }
+.alert-error   { background: rgba(217,79,79,0.12); border: 1px solid var(--danger); color: #B03030; }
+.alert-success { background: var(--green-dim); border: 1px solid var(--green-border); color: var(--green); }
+
+/* =============================================
+   FORMULÁRIOS
+   ============================================= */
+.form-group { margin-bottom: 1.25rem; }
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.4rem;
+}
+.form-control {
+  width: 100%;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-heading);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.65rem 0.9rem;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.form-control:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(27,122,62,0.12); }
+.form-control::placeholder { color: var(--text-muted); }
+
+/* =============================================
+   DIVIDERS
+   ============================================= */
+.divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+.divider-gold { border-top: 2px solid var(--gold); }
+
+/* =============================================
+   PAGE HEADER (páginas internas)
+   ============================================= */
+.page-header {
+  background: linear-gradient(135deg, var(--green) 0%, #0D3520 100%);
+  padding: 4rem 0 3rem;
+  padding-top: calc(68px + 3rem);
+  text-align: center;
+  border-bottom: 4px solid var(--gold);
+}
+.page-header .breadcrumb { font-size: 0.82rem; color: rgba(255,255,255,0.8); margin-bottom: 0.75rem; }
+.page-header .breadcrumb a { color: var(--gold-light); }
+.page-header .breadcrumb span { margin: 0 0.4rem; }
+.page-header h1 { color: #fff; margin-bottom: 0.5rem; }
+.page-header p { color: rgba(255,255,255,0.85); font-size: 1.05rem; margin: 0; }
+
+/* =============================================
+   EMPTY STATE / LOADING
+   ============================================= */
+.empty-state { text-align: center; padding: 4rem 1rem; color: var(--text-muted); }
+.empty-state svg { margin: 0 auto 1.25rem; opacity: 0.35; }
+.empty-state p { font-size: 1rem; }
+
+.spinner {
+  display: inline-block;
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-wrap { display: flex; justify-content: center; padding: 3rem; }
+
+/* =============================================
+   UTILIDADES
+   ============================================= */
+.text-gold    { color: var(--gold); }
+.text-green   { color: var(--green); }
+.text-muted   { color: var(--text-muted); }
+.text-navy    { color: var(--navy); }
+.text-center  { text-align: center; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.d-flex       { display: flex; }
+.align-center { align-items: center; }
+.gap-1 { gap: 0.5rem; }
+.gap-2 { gap: 1rem; }
+.flex-wrap    { flex-wrap: wrap; }
+.justify-between { justify-content: space-between; }
+.w-full { width: 100%; }
+
+/* =============================================
+   RESPONSIVO
+   ============================================= */
+@media (max-width: 768px) {
+  .section { padding: 3.5rem 0; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}

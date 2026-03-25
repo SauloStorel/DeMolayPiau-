@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gabinete Estadual – DeMolay Piauí</title>
+  <meta name="description" content="Documentos oficiais emitidos pelo Gabinete Estadual da Ordem DeMolay Piauiense.">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="/css/documents.css">
+</head>
+<body>
+
+  <div id="nav-placeholder"></div>
+
+  <div class="page-header">
+    <div class="container">
+      <p class="breadcrumb">
+        <a href="/">Início</a> <span>/</span>
+        <a href="#">Documentos</a> <span>/</span>
+        Gabinete Estadual
+      </p>
+      <h1>Gabinete Estadual</h1>
+      <p>Documentos oficiais, resoluções, portarias e comunicados emitidos pelo Gabinete Estadual da Jurisdição do Piauí</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="d-flex justify-between align-center flex-wrap gap-2 mb-3">
+        <div>
+          <p class="text-muted" style="font-size:0.88rem; margin:0;">
+            <span id="docs-count">–</span> documento(s) publicado(s)
+          </p>
+        </div>
+        <div id="year-filters" class="year-filters"></div>
+      </div>
+
+      <div id="docs-container" data-category="gabinete">
+        <div class="loading-wrap"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/nav.js"></script>
+  <script src="/js/documents.js"></script>
+</body>
+</html>

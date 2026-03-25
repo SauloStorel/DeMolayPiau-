@@ -1,0 +1,45 @@
+<nav id="site-nav">
+  <div class="container nav-inner">
+    <a href="/" class="nav-logo">
+      <img src="/images/logo.png" alt="DeMolay Piauí">
+      <div class="nav-logo-text">
+        <strong>Ordem DeMolay</strong>
+        <span>Piauí</span>
+      </div>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/">Início</a></li>
+      <li><a href="/sobre.html">Sobre</a></li>
+      <li class="nav-dropdown">
+        <a href="#">
+          Documentos
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="/gabinete.html">Gabinete Estadual</a></li>
+          <li><a href="/grande-conselho.html">Grande Conselho Estadual</a></li>
+        </ul>
+      </li>
+      <li><a href="/prestacao-de-contas.html">Prestação de Contas</a></li>
+      <li><a href="/loja.html">Loja</a></li>
+      <li><a href="/contato.html">Contato</a></li>
+      <li>
+        <a href="/carrinho.html" style="position:relative;display:flex;align-items:center;gap:0.4rem;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          <span class="cart-badge" style="background:var(--gold);color:var(--navy);border-radius:50%;width:18px;height:18px;font-size:0.7rem;font-weight:700;display:none;align-items:center;justify-content:center;position:absolute;top:-4px;right:-6px;"></span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>

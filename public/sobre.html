@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre a Ordem – DeMolay Piauí</title>
+  <meta name="description" content="Conheça a história e os valores da Ordem DeMolay Piauiense.">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <style>
+    .sobre-intro {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .sobre-intro p { color: var(--text-muted); }
+
+    .historia-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--green);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .historia-box h3 { margin-bottom: 1rem; }
+    .historia-box p { color: var(--text-muted); font-size: 0.95rem; }
+
+    /* Timeline */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 0;
+      width: 2px;
+      background: var(--green);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: 2rem;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -2.45rem;
+      top: 6px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: 2px solid var(--bg);
+    }
+
+    .timeline-item .tl-year {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.25rem;
+    }
+
+    .timeline-item h4 {
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .timeline-item p { font-size: 0.88rem; color: var(--text-muted); margin: 0; }
+
+    /* Virtudes */
+    .virtudes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .virtude-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .virtude-card:hover {
+      border-color: var(--green);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .virtude-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+    .virtude-card h4 { color: var(--green); font-size: 1rem; margin-bottom: 0.4rem; }
+    .virtude-card p { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
+
+    @media (max-width: 768px) {
+      .sobre-intro { grid-template-columns: 1fr; gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="nav-placeholder"></div>
+
+  <div class="page-header">
+    <div class="container">
+      <p class="breadcrumb"><a href="/">Início</a> <span>/</span> Sobre</p>
+      <h1>Sobre a Ordem DeMolay</h1>
+      <p>Conheça nossa história, nossos valores e nossa missão no Piauí</p>
+    </div>
+  </div>
+
+  <!-- Intro -->
+  <section class="section">
+    <div class="container sobre-intro">
+      <div>
+        <span class="badge badge-gold" style="margin-bottom:1rem;">Nossa História</span>
+        <h2>O que é a Ordem DeMolay?</h2>
+        <p>A Ordem DeMolay é uma organização juvenil vinculada à Maçonaria, fundada em 9 de março de 1919 em Kansas City, Missouri (EUA), por Frank S. Land e um grupo de jovens rapazes. O nome é uma homenagem a Jacques de Molay, último Grão-Mestre da Ordem dos Cavaleiros Templários.</p>
+        <p>A organização tem como objetivo a formação integral do caráter de jovens do sexo masculino entre 12 e 21 anos, cultivando virtudes, liderança, cidadania e fraternidade.</p>
+        <p>Presente em mais de 20 países, a Ordem DeMolay é reconhecida mundialmente pela qualidade da formação que proporciona aos seus membros, denominados DeMolays.</p>
+        <a href="/gabinete.html" class="btn btn-primary mt-2">Ver Documentos Oficiais</a>
+      </div>
+      <div class="historia-box">
+        <h3>DeMolay no Piauí</h3>
+        <p>Em 1999 a Ordem DeMolay chegou ao Piauí, trazendo os mesmos ideais de formação de caráter e liderança que fundamentam a organização em todo o mundo.</p>
+        <p>O Gabinete Estadual e o Grande Conselho Estadual são os órgãos máximos da jurisdição piauiense, responsáveis pela coordenação administrativa, regulamentação e orientação de todos os capítulos ativos no estado.</p>
+        <hr class="divider">
+        <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:1.8rem;font-family:var(--font-heading);color:var(--gold);font-weight:700;">PI</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);">Jurisdição</div>
+          </div>
+          <div>
+            <div style="font-size:1.8rem;font-family:var(--font-heading);color:var(--gold);font-weight:700;">1999</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);">Chegada ao Piauí</div>
+          </div>
+          <div>
+            <div style="font-size:1.8rem;font-family:var(--font-heading);color:var(--gold);font-weight:700;">7</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);">Virtudes Cardeais</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Virtudes -->
+  <section class="section" style="background:var(--bg-section);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="section-title">
+        <h2>As 7 Virtudes Cardeais</h2>
+        <p>Os pilares que guiam a formação de cada DeMolay</p>
+      </div>
+      <div class="virtudes-grid">
+        <div class="virtude-card">
+          <div class="virtude-icon">❤️</div>
+          <h4>Amor Filial</h4>
+          <p>Respeito e amor pela família, especialmente pelos pais</p>
+        </div>
+        <div class="virtude-card">
+          <div class="virtude-icon">🙏</div>
+          <h4>Reverência pelas Coisas Sagradas</h4>
+          <p>Respeito a Deus e a tudo que é considerado sagrado</p>
+        </div>
+        <div class="virtude-card">
+          <div class="virtude-icon">🎩</div>
+          <h4>Cortesia</h4>
+          <p>Educação, respeito e boas maneiras no trato com todos</p>
+        </div>
+        <div class="virtude-card">
+          <div class="virtude-icon">🤝</div>
+          <h4>Companheirismo</h4>
+          <p>Lealdade, solidariedade e amizade verdadeira entre irmãos</p>
+        </div>
+        <div class="virtude-card">
+          <div class="virtude-icon">🛡️</div>
+          <h4>Fidelidade</h4>
+          <p>Cumprimento da palavra e dos compromissos assumidos</p>
+        </div>
+        <div class="virtude-card">
+          <div class="virtude-icon">✨</div>
+          <h4>Pureza</h4>
+          <p>Integridade moral e nobreza de propósitos</p>
+        </div>
+        <div class="virtude-card">
+          <div class="virtude-icon">🇧🇷</div>
+          <h4>Patriotismo</h4>
+          <p>Amor à pátria e dedicação ao bem da nação</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="section">
+    <div class="container" style="max-width:700px;">
+      <div class="section-title">
+        <h2>Marcos Históricos</h2>
+        <p>Uma linha do tempo da Ordem DeMolay</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <p class="tl-year">1919</p>
+          <h4>Fundação da Ordem DeMolay</h4>
+          <p>Frank S. Land funda a organização em Kansas City, Missouri, com um grupo de jovens rapazes liderado por Louis Lower.</p>
+        </div>
+        <div class="timeline-item">
+          <p class="tl-year">1980</p>
+          <h4>Chegada ao Brasil</h4>
+          <p>A Ordem DeMolay é instalada no Brasil, dando início à expansão no continente sul-americano.</p>
+        </div>
+        <div class="timeline-item">
+          <p class="tl-year">1999</p>
+          <h4>DeMolay no Piauí</h4>
+          <p>Os ideais da Ordem DeMolay chegam ao estado do Piauí, com a fundação do primeiro capítulo piauiense.</p>
+        </div>
+        <div class="timeline-item">
+          <p class="tl-year">Hoje</p>
+          <h4>Jurisdição Piauiense Ativa</h4>
+          <p>O Gabinete Estadual e o Grande Conselho Estadual coordenam os capítulos ativos no Piauí, formando novas gerações de líderes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/nav.js"></script>
+</body>
+</html>

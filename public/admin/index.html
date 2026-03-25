@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login – Administração DeMolay Piauí</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-header">
+        <img src="/images/logo.png" alt="DeMolay Piauí" onerror="this.style.display='none'">
+        <h1>Área Administrativa</h1>
+        <p>Ordem DeMolay – Jurisdição do Piauí</p>
+      </div>
+
+      <div id="login-error" class="alert alert-error" style="display:none;"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            placeholder="admin@demolaypiaui.org.br"
+            autocomplete="username"
+            required
+          >
+        </div>
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <input
+            type="password"
+            id="password"
+            class="form-control"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+        <button type="submit" class="btn btn-primary w-full" id="loginBtn" style="justify-content:center;margin-top:0.5rem;">
+          Entrar
+        </button>
+      </form>
+
+      <div class="divider"></div>
+      <p style="text-align:center;font-size:0.8rem;color:var(--text-muted);">
+        <a href="/">← Voltar ao site público</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Redireciona se já está logado
+    fetch('/api/auth/check')
+      .then(r => { if (r.ok) window.location.href = '/admin/panel.html'; })
+      .catch(() => {});
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const errEl = document.getElementById('login-error');
+      btn.disabled = true;
+      btn.textContent = 'Entrando...';
+      errEl.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value
+          })
+        });
+
+        if (res.ok) {
+          window.location.href = '/admin/panel.html';
+        } else {
+          const data = await res.json();
+          errEl.textContent = data.error || 'Credenciais inválidas.';
+          errEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Entrar';
+        }
+      } catch {
+        errEl.textContent = 'Erro de conexão. Tente novamente.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Entrar';
+      }
+    });
+  </script>
+</body>
+</html>

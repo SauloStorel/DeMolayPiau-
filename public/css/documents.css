@@ -1,0 +1,97 @@
+/* =============================================
+   FILTROS POR ANO
+   ============================================= */
+.year-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+.year-btn {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--text-muted);
+  font-size: 0.85rem; font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.year-btn:hover { border-color: var(--green); color: var(--green); }
+.year-btn.active { background: var(--green); border-color: var(--green); color: #fff; }
+
+/* =============================================
+   DOCUMENTO CARD
+   ============================================= */
+.doc-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.doc-card:hover { border-color: var(--green); box-shadow: 0 4px 16px rgba(27,122,62,0.1); }
+
+.doc-icon {
+  flex-shrink: 0;
+  width: 44px; height: 44px;
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
+  border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+}
+.doc-icon svg { width: 22px; height: 22px; color: var(--green); }
+
+.doc-info { flex: 1; min-width: 0; }
+.doc-info h3 {
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 0.2rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.doc-meta { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.doc-date { font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.3rem; }
+.doc-date svg { width: 12px; height: 12px; }
+.doc-actions { flex-shrink: 0; }
+
+/* =============================================
+   DOCS LIST
+   ============================================= */
+.docs-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+/* =============================================
+   ANO AGRUPADOR
+   ============================================= */
+.year-group { margin-bottom: 2.5rem; }
+.year-group-title {
+  font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--green);
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--green-dim);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+
+/* =============================================
+   PRESTAÇÃO DE CONTAS
+   ============================================= */
+.prestacao-intro {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.prestacao-intro p { color: var(--text-muted); margin: 0; font-size: 0.95rem; }
+
+/* =============================================
+   RESPONSIVO
+   ============================================= */
+@media (max-width: 600px) {
+  .doc-card { flex-wrap: wrap; }
+  .doc-actions { width: 100%; }
+  .doc-actions .btn { width: 100%; justify-content: center; }
+}

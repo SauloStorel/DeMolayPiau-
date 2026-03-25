@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prestação de Contas – DeMolay Piauí</title>
+  <meta name="description" content="Prestação de contas da Ordem DeMolay Piauiense. Transparência na gestão de recursos.">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="/css/documents.css">
+</head>
+<body>
+
+  <div id="nav-placeholder"></div>
+
+  <div class="page-header">
+    <div class="container">
+      <p class="breadcrumb"><a href="/">Início</a> <span>/</span> Prestação de Contas</p>
+      <h1>Prestação de Contas</h1>
+      <p>Documentos de transparência financeira da Jurisdição do Piauí</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="prestacao-intro">
+        <p>
+          A Ordem DeMolay Piauiense está comprometida com a <strong style="color:var(--white)">transparência e a responsabilidade</strong>
+          na gestão de seus recursos. Nesta seção são publicados os balanços financeiros, relatórios de receitas e despesas,
+          e demais documentos contábeis da jurisdição, em cumprimento ao princípio de prestação de contas às famílias, capítulos e parceiros institucionais.
+        </p>
+      </div>
+
+      <div class="d-flex justify-between align-center flex-wrap gap-2 mb-3">
+        <div>
+          <p class="text-muted" style="font-size:0.88rem; margin:0;">
+            <span id="docs-count">–</span> documento(s) publicado(s)
+          </p>
+        </div>
+        <div id="year-filters" class="year-filters"></div>
+      </div>
+
+      <div id="docs-container" data-category="prestacao">
+        <div class="loading-wrap"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/nav.js"></script>
+  <script src="/js/documents.js"></script>
+</body>
+</html>

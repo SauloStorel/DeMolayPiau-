@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja – DeMolay Piauí</title>
+  <meta name="description" content="Inscrições para eventos estaduais e produtos da Ordem DeMolay Piauiense.">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="/css/shop.css">
+</head>
+<body>
+
+  <div id="nav-placeholder"></div>
+
+  <div class="page-header">
+    <div class="container">
+      <p class="breadcrumb"><a href="/">Início</a> <span>/</span> Loja</p>
+      <h1>Loja</h1>
+      <p>Inscrições para eventos estaduais e produtos da jurisdição</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div id="shop-content">
+        <div class="loading-wrap"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/nav.js"></script>
+  <script src="/js/shop.js"></script>
+  <script>
+    async function loadShop() {
+      const container = document.getElementById('shop-content');
+      try {
+        const products = await fetch('/api/shop/products').then(r => r.json());
+
+        if (!products.length) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="52" height="52">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 01-8 0"/>
+              </svg>
+              <p>Nenhum produto disponível no momento.<br>Volte em breve!</p>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = `
+          <p class="text-muted mb-3" style="font-size:0.88rem;">${products.length} produto(s) disponível(is)</p>
+          <div class="shop-grid">${products.map(buildProductCard).join('')}</div>`;
+      } catch {
+        container.innerHTML = '<p class="text-muted text-center">Erro ao carregar produtos.</p>';
+      }
+    }
+
+    function buildProductCard(p) {
+      const imgSrc = getProductImage(p);
+      const imgEl = imgSrc
+        ? `<img src="${imgSrc}" alt="${escapeHtml(p.name)}" loading="lazy">`
+        : `<div class="product-card-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>`;
+
+      const lot = p.activeLot;
+      let badge = '';
+      let priceEl = '';
+      let lotInfo = '';
+
+      if (lot) {
+        const isSoldOut = lot.maxQuantity && (lot.soldQuantity || 0) >= lot.maxQuantity;
+        if (isSoldOut) {
+          badge = `<span class="badge-esgotado">Esgotado</span>`;
+          priceEl = formatPriceRange(p, lot);
+        } else {
+          badge = `<span class="badge-lote">${escapeHtml(lot.name)}</span>`;
+          priceEl = formatPriceRange(p, lot);
+        }
+        const until = lot.availableUntil ? ` · até ${formatDate(lot.availableUntil)}` : '';
+        lotInfo = `<span class="product-card-lot-info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          ${escapeHtml(lot.name)}${until}
+        </span>`;
+      } else {
+        const now = new Date();
+        const hasFuture = (p.lots||[]).some(l => l.availableFrom && new Date(l.availableFrom) > now);
+        if (hasFuture) {
+          badge = `<span class="badge-em-breve">Em breve</span>`;
+          priceEl = `<div class="product-card-price"><span style="font-size:1rem;color:var(--text-muted)">Em breve</span></div>`;
+        } else {
+          badge = `<span class="badge-encerrado">Encerrado</span>`;
+          priceEl = `<div class="product-card-price"><span style="font-size:1rem;color:var(--text-muted)">Inscrições encerradas</span></div>`;
+        }
+      }
+
+      return `
+        <a href="/produto.html?id=${p.id}" class="product-card" style="text-decoration:none;">
+          <div class="product-card-img">
+            ${imgEl}
+            <div class="product-badges">${badge}</div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-card-name">${escapeHtml(p.name)}</div>
+            ${lotInfo}
+            ${priceEl}
+            <div class="product-card-footer">
+              <span class="btn btn-primary btn-sm w-full" style="justify-content:center;">Ver Detalhes</span>
+            </div>
+          </div>
+        </a>`;
+    }
+
+    function formatPriceRange(p, lot) {
+      if (!lot) return '';
+      if (p.variants && p.variants.length > 0 && lot.variantPrices) {
+        const prices = Object.values(lot.variantPrices).filter(v => v != null);
+        if (!prices.length) return '';
+        const min = Math.min(...prices);
+        const max = Math.max(...prices);
+        if (min === max) return `<div class="product-card-price">${formatBRL(min)}</div>`;
+        return `<div class="product-card-price">${formatBRL(min)} <span class="price-range">– ${formatBRL(max)}</span></div>`;
+      }
+      return `<div class="product-card-price">${formatBRL(lot.price || 0)}</div>`;
+    }
+
+    loadShop();
+  </script>
+</body>
+</html>

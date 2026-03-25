@@ -1,0 +1,78 @@
+[
+  {
+    "id": "c6e4c90e-fcb0-42f9-8eb3-70b21ef68895",
+    "name": "Camisa do GE \"Unidos Pelo Ideal\" 2025/26",
+    "description": "Camisa do Gabinete Estadual \"Unidos Pelo Ideal\" ",
+    "active": true,
+    "availableFrom": "2026-03-23T21:56",
+    "availableUntil": "2026-04-01T21:56",
+    "variants": [],
+    "lots": [
+      {
+        "id": "l_1774400472047",
+        "name": "Lote Unico",
+        "availableFrom": "2026-03-24T01:01:00.000Z",
+        "availableUntil": "2026-04-01T01:01:00.000Z",
+        "price": 60,
+        "variantPrices": {},
+        "maxQuantity": null,
+        "soldQuantity": 0
+      }
+    ],
+    "image": "img-6e00965b-be75-48b5-bdd9-c861b1161faf.png",
+    "imageUrl": null,
+    "imageType": "upload",
+    "createdAt": "2026-03-25T01:01:38.105Z"
+  },
+  {
+    "id": "0f39ae4c-2c3c-443a-8799-aa5dfce88350",
+    "name": "CEOD -PI",
+    "description": "Congresso Estadual da ordem DeMolay piauiense",
+    "active": true,
+    "availableFrom": "2026-03-23T20:42",
+    "availableUntil": "2026-05-29T20:42",
+    "variants": [
+      {
+        "id": "v_1774395972173",
+        "name": "DeMolay Ativo"
+      },
+      {
+        "id": "v_1774395981404",
+        "name": "Senior/Maçon"
+      }
+    ],
+    "lots": [
+      {
+        "id": "l_1774395701081",
+        "name": "1º Lote",
+        "availableFrom": "2026-03-23T23:43:00.000Z",
+        "availableUntil": "2026-03-25T23:43:00.000Z",
+        "price": null,
+        "variantPrices": {
+          "v_1774395972173": 150,
+          "v_1774395981404": 180
+        },
+        "maxQuantity": 30,
+        "soldQuantity": 0
+      },
+      {
+        "id": "l_1774396032296",
+        "name": "2º Lote",
+        "availableFrom": "2026-03-26T23:47:00.000Z",
+        "availableUntil": "2026-03-28T23:47:00.000Z",
+        "price": null,
+        "variantPrices": {
+          "v_1774395972173": 200,
+          "v_1774395981404": 220
+        },
+        "maxQuantity": null,
+        "soldQuantity": 0
+      }
+    ],
+    "image": "img-35163ab5-a4fb-4786-a104-83920634a059.png",
+    "imageUrl": null,
+    "imageType": "upload",
+    "createdAt": "2026-03-24T23:47:46.003Z",
+    "updatedAt": "2026-03-25T00:42:05.563Z"
+  }
+]

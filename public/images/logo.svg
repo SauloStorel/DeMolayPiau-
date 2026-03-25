@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Escudo base -->
+  <path d="M50 5 L90 20 L90 55 C90 75 70 92 50 97 C30 92 10 75 10 55 L10 20 Z"
+        fill="#122040" stroke="#C9A84C" stroke-width="2.5"/>
+
+  <!-- Estrela de Davi (símbolo DeMolay) -->
+  <g transform="translate(50,48)" fill="none" stroke="#C9A84C" stroke-width="2">
+    <!-- Triângulo para cima -->
+    <polygon points="0,-22 19,11 -19,11" fill="rgba(201,168,76,0.12)" stroke="#C9A84C" stroke-width="1.8"/>
+    <!-- Triângulo para baixo -->
+    <polygon points="0,22 19,-11 -19,-11" fill="rgba(201,168,76,0.12)" stroke="#C9A84C" stroke-width="1.8"/>
+  </g>
+
+  <!-- Letra D no centro -->
+  <text x="50" y="54" text-anchor="middle" dominant-baseline="middle"
+        font-family="Georgia, serif" font-size="18" font-weight="bold"
+        fill="#C9A84C" letter-spacing="1">D</text>
+
+  <!-- Texto DeMolay -->
+  <text x="50" y="82" text-anchor="middle"
+        font-family="Georgia, serif" font-size="7" font-weight="bold"
+        fill="#E8C87A" letter-spacing="2">DeMolay</text>
+</svg>

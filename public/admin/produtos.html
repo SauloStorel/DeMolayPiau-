@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produtos – Admin DeMolay Piauí</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/shop.css">
+</head>
+<body>
+
+  <div id="nav-placeholder"></div>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <p class="sidebar-title">Loja</p>
+      <ul class="sidebar-nav">
+        <li><a href="/admin/produtos.html" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+          </svg>Produtos
+        </a></li>
+        <li><a href="/admin/pedidos.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+          </svg>Pedidos
+        </a></li>
+      </ul>
+      <hr class="sidebar-divider">
+      <p class="sidebar-title">Documentos</p>
+      <ul class="sidebar-nav">
+        <li><a href="/admin/panel.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+          </svg>Gerenciar Docs
+        </a></li>
+      </ul>
+      <hr class="sidebar-divider">
+      <ul class="sidebar-nav">
+        <li><a href="/">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>Ver Site
+        </a></li>
+        <li><a href="#" id="logoutBtn" style="color:var(--danger)!important;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>Sair
+        </a></li>
+      </ul>
+    </aside>
+
+    <main class="admin-main">
+      <div class="d-flex justify-between align-center flex-wrap gap-2 mb-3">
+        <div class="admin-page-title" style="margin:0;">
+          <h1 style="font-size:1.6rem;margin:0;">Produtos da Loja</h1>
+          <p style="color:var(--text-muted);font-size:0.88rem;margin:0.25rem 0 0;">Gerencie inscrições de eventos e produtos</p>
+        </div>
+        <a href="/admin/produto-form.html" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Novo Produto
+        </a>
+      </div>
+
+      <div id="products-msg"></div>
+
+      <!-- Config PIX / WhatsApp -->
+      <div class="upload-card mb-3" style="margin-bottom:1.5rem;">
+        <h3 style="font-size:0.95rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="color:var(--gold)">
+            <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/>
+          </svg>
+          Configurações de Pagamento
+        </h3>
+        <form id="configForm">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="form-group" style="margin:0;">
+              <label for="cfg-whatsapp">WhatsApp (com código do país)</label>
+              <input type="text" id="cfg-whatsapp" class="form-control" placeholder="5586999999999">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label for="cfg-pix">Chave PIX</label>
+              <input type="text" id="cfg-pix" class="form-control" placeholder="contato@demolaypiaui.org.br">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label for="cfg-pixtype">Tipo da Chave PIX</label>
+              <select id="cfg-pixtype" class="form-control">
+                <option value="email">E-mail</option>
+                <option value="cpf">CPF</option>
+                <option value="cnpj">CNPJ</option>
+                <option value="telefone">Telefone</option>
+                <option value="aleatoria">Chave Aleatória</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label for="cfg-pixname">Nome do Favorecido PIX</label>
+              <input type="text" id="cfg-pixname" class="form-control" placeholder="Ordem DeMolay Piauí">
+            </div>
+          </div>
+          <div id="cfg-msg" style="margin-top:0.75rem;"></div>
+          <button type="submit" class="btn btn-outline btn-sm mt-2">Salvar Configurações</button>
+        </form>
+      </div>
+
+      <!-- Lista de produtos -->
+      <div id="products-list">
+        <div class="loading-wrap"><div class="spinner"></div></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/nav.js"></script>
+  <script src="/js/shop.js"></script>
+  <script>
+    // Auth
+    fetch('/api/auth/check').then(r => { if (!r.ok) location.href = '/admin/index.html'; });
+
+    document.getElementById('logoutBtn').addEventListener('click', async e => {
+      e.preventDefault();
+      await fetch('/api/auth/logout', { method: 'POST' });
+      location.href = '/admin/index.html';
+    });
+
+    // Carrega config
+    fetch('/api/admin/shop/config')
+      .then(r => r.json())
+      .then(cfg => {
+        document.getElementById('cfg-whatsapp').value = cfg.whatsapp || '';
+        document.getElementById('cfg-pix').value = cfg.pixKey || '';
+        document.getElementById('cfg-pixtype').value = cfg.pixType || 'email';
+        document.getElementById('cfg-pixname').value = cfg.pixName || '';
+      });
+
+    document.getElementById('configForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const msgEl = document.getElementById('cfg-msg');
+      const res = await fetch('/api/admin/shop/config', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          whatsapp: document.getElementById('cfg-whatsapp').value,
+          pixKey: document.getElementById('cfg-pix').value,
+          pixType: document.getElementById('cfg-pixtype').value,
+          pixName: document.getElementById('cfg-pixname').value
+        })
+      });
+      msgEl.innerHTML = res.ok
+        ? `<span class="text-muted" style="font-size:0.82rem;color:var(--success)!important;">✔ Configurações salvas.</span>`
+        : `<span style="color:var(--danger);font-size:0.82rem;">Erro ao salvar.</span>`;
+      setTimeout(() => msgEl.innerHTML = '', 3000);
+    });
+
+    // Carrega produtos
+    async function loadProducts() {
+      const list = document.getElementById('products-list');
+      try {
+        const products = await fetch('/api/admin/shop/products').then(r => r.json());
+        if (!products.length) {
+          list.innerHTML = `<div class="empty-state"><p>Nenhum produto cadastrado.</p><a href="/admin/produto-form.html" class="btn btn-primary mt-2">Criar primeiro produto</a></div>`;
+          return;
+        }
+        list.innerHTML = products.map(p => buildAdminProductItem(p)).join('');
+        attachEvents();
+      } catch {
+        list.innerHTML = '<p class="text-muted">Erro ao carregar produtos.</p>';
+      }
+    }
+
+    function buildAdminProductItem(p) {
+      const imgSrc = getProductImage(p);
+      const imgEl = imgSrc
+        ? `<img src="${imgSrc}" class="admin-product-img" alt="">`
+        : `<div class="admin-product-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" style="color:var(--text-muted)"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>`;
+
+      const activeLot = getActiveLot(p);
+      const lotInfo = activeLot
+        ? `${activeLot.name} · ${activeLot.price != null ? formatBRL(activeLot.price) : 'variável'}`
+        : 'Sem lote ativo';
+
+      const lotsCount = (p.lots||[]).length;
+      const variantsCount = (p.variants||[]).length;
+
+      return `
+        <div class="admin-product-item" data-id="${p.id}">
+          ${imgEl}
+          <div class="admin-product-info">
+            <strong>${escapeHtml(p.name)}</strong>
+            <span>${lotInfo} · ${lotsCount} lote(s) · ${variantsCount} variante(s)${p.availableUntil ? ' · até ' + formatDate(p.availableUntil) : ''}</span>
+          </div>
+          <div class="admin-product-actions">
+            <label class="toggle-switch" title="${p.active ? 'Ativo — clique para desativar' : 'Inativo — clique para ativar'}">
+              <input type="checkbox" class="toggle-input" ${p.active ? 'checked' : ''} data-id="${p.id}">
+              <span class="toggle-slider"></span>
+            </label>
+            <a href="/admin/produto-form.html?id=${p.id}" class="btn btn-sm btn-outline">Editar</a>
+            <button class="btn btn-danger btn-sm delete-btn" data-id="${p.id}" data-name="${escapeHtml(p.name)}">Excluir</button>
+          </div>
+        </div>`;
+    }
+
+    function attachEvents() {
+      // Toggle ativo/inativo
+      document.querySelectorAll('.toggle-input').forEach(input => {
+        input.addEventListener('change', async () => {
+          await fetch(`/api/admin/shop/products/${input.dataset.id}/toggle`, { method: 'PATCH' });
+        });
+      });
+
+      // Deletar
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm(`Excluir "${btn.dataset.name}"? Esta ação não pode ser desfeita.`)) return;
+          const res = await fetch(`/api/admin/shop/products/${btn.dataset.id}`, { method: 'DELETE' });
+          if (res.ok) loadProducts();
+          else alert('Erro ao excluir produto.');
+        });
+      });
+    }
+
+    function formatDate(iso) {
+      return new Date(iso).toLocaleDateString('pt-BR');
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement('div'); d.textContent = String(str||''); return d.innerHTML;
+    }
+
+    loadProducts();
+  </script>
+</body>
+</html>
