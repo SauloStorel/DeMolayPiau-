@@ -21,9 +21,6 @@ function renderCart() {
         <h3 style="font-size:1.2rem;margin-bottom:0.5rem;color:var(--text-heading);">Carrinho vazio</h3>
         <p style="color:var(--text-muted);margin-bottom:1.5rem;">Você ainda não adicionou nenhum item ao carrinho.</p>
         <a href="/loja.html" class="btn btn-primary" style="margin:0 auto;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
-          </svg>
           Explorar Produtos
         </a>
       </div>`;
