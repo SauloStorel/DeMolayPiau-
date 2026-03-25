@@ -9,16 +9,8 @@
   position: relative;
   overflow: hidden;
   background: linear-gradient(160deg, var(--bg-dark) 0%, #0D3520 45%, var(--green) 100%);
-  background-size: 200% 200%;
-  animation: heroGradient 12s ease infinite;
   text-align: center;
   padding: 8rem 1.5rem 4rem;
-}
-
-@keyframes heroGradient {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 .hero-bg-pattern {
@@ -104,7 +96,6 @@
   letter-spacing: 0.22em;
   color: var(--gold-light);
   margin-bottom: 1rem;
-  animation: heroContentIn 1s ease 0.4s both;
 }
 
 .hero h1 {
@@ -112,7 +103,6 @@
   color: #fff;
   margin-bottom: 1.25rem;
   line-height: 1.15;
-  animation: heroContentIn 1s ease 0.5s both;
 }
 .hero h1 span.green { color: var(--green-light); }
 .hero h1 span.gold  { color: var(--gold-light); }
@@ -122,13 +112,9 @@
   color: rgba(255,255,255,0.7);
   max-width: 520px;
   margin: 0 auto 2.5rem;
-  animation: heroContentIn 1s ease 0.6s both;
 }
 
-.hero-actions {
-  display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
-  animation: heroContentIn 1s ease 0.7s both;
-}
+.hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
 .hero-scroll {
   position: absolute;

@@ -136,9 +136,9 @@ a:hover { color: var(--green); }
 .stagger-children.visible > *:nth-child(6) { transition-delay: 0.3s; }
 .stagger-children.visible > *:nth-child(7) { transition-delay: 0.35s; }
 
-/* Page fade in */
-body {
-  animation: pageIn 0.5s ease;
+/* Page fade in — aplicado no main wrapper, não no body inteiro */
+.page-fadein {
+  animation: pageIn 0.4s ease;
 }
 @keyframes pageIn {
   from { opacity: 0; }
