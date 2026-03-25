@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const res = await fetch('/partials/nav.html');
       navPlaceholder.innerHTML = await res.text();
       initNav();
-      if (typeof updateCartBadge === 'function') updateCartBadge();
+      updateCartBadgeNav();
     }
     if (footerPlaceholder) {
       const res = await fetch('/partials/footer.html');
@@ -21,6 +21,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (e) {
     console.warn('Erro ao carregar partials:', e);
   }
+});
+
+function updateCartBadgeNav() {
+  const CART_KEY = 'demolay_cart';
+  let cart = [];
+  try { cart = JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch {}
+
+  const count = cart.reduce((sum, i) => sum + (i.quantity || 0), 0);
+  const total = cart.reduce((sum, i) => sum + (i.price || 0) * (i.quantity || 0), 0);
+  const totalFmt = total > 0
+    ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total)
+    : '';
+
+  document.querySelectorAll('.cart-badge').forEach(el => {
+    el.textContent = count;
+    el.style.display = count > 0 ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.cart-total-nav').forEach(el => {
+    el.textContent = totalFmt;
+  });
+}
+
+// Sincroniza badge quando outro tab altera o localStorage
+window.addEventListener('storage', (e) => {
+  if (e.key === 'demolay_cart') updateCartBadgeNav();
 });
 
 function initScrollTop() {
