@@ -126,11 +126,22 @@
       </div>
 
       <!-- Filtros -->
-      <div class="orders-filters">
-        <button class="filter-btn active" data-filter="all">Todos</button>
-        <button class="filter-btn gold" data-filter="pending">Aguardando</button>
-        <button class="filter-btn" data-filter="paid">Pagos</button>
-        <button class="filter-btn red" data-filter="cancelled">Cancelados</button>
+      <div class="orders-filters-bar">
+        <div class="orders-filters">
+          <button class="filter-btn active" data-filter="all">Todos</button>
+          <button class="filter-btn gold" data-filter="pending">Aguardando</button>
+          <button class="filter-btn" data-filter="paid">Pagos</button>
+          <button class="filter-btn red" data-filter="cancelled">Cancelados</button>
+        </div>
+        <div class="orders-product-filter">
+          <label for="productFilter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            Produto
+          </label>
+          <select id="productFilter">
+            <option value="">Todos os produtos</option>
+          </select>
+        </div>
       </div>
 
       <div id="orders-list">
@@ -150,11 +161,13 @@
 
     let allOrders = [];
     let currentFilter = 'all';
+    let currentProduct = '';
 
     async function loadOrders() {
       const list = document.getElementById('orders-list');
       try {
         allOrders = await fetch('/api/admin/shop/orders').then(r => r.json());
+        populateProductFilter();
         renderStats();
         renderOrders();
         document.getElementById('orders-stats').style.display = 'grid';
@@ -163,16 +176,41 @@
       }
     }
 
+    function populateProductFilter() {
+      const select = document.getElementById('productFilter');
+      const seen = new Map();
+      allOrders.forEach(o => (o.items || []).forEach(i => {
+        if (!seen.has(i.productId)) seen.set(i.productId, i.productName);
+      }));
+      seen.forEach((name, id) => {
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+    }
+
+    function getFiltered() {
+      return allOrders.filter(o => {
+        const statusOk = currentFilter === 'all' || o.status === currentFilter;
+        const productOk = !currentProduct || (o.items||[]).some(i => i.productId === currentProduct);
+        return statusOk && productOk;
+      });
+    }
+
     function renderStats() {
-      const paid = allOrders.filter(o => o.status === 'paid');
-      document.getElementById('stat-total').textContent = allOrders.length;
+      const base = currentProduct
+        ? allOrders.filter(o => (o.items||[]).some(i => i.productId === currentProduct))
+        : allOrders;
+      const paid = base.filter(o => o.status === 'paid');
+      document.getElementById('stat-total').textContent = base.length;
       document.getElementById('stat-revenue').textContent = formatBRL(paid.reduce((s, o) => s + o.total, 0));
-      document.getElementById('stat-pending').textContent = allOrders.filter(o => o.status === 'pending').length;
+      document.getElementById('stat-pending').textContent = base.filter(o => o.status === 'pending').length;
     }
 
     function renderOrders() {
       const list = document.getElementById('orders-list');
-      const filtered = currentFilter === 'all' ? allOrders : allOrders.filter(o => o.status === currentFilter);
+      const filtered = getFiltered();
 
       if (!filtered.length) {
         list.innerHTML = `<div class="empty-state"><p>Nenhum pedido${currentFilter === 'all' ? '' : ' com este status'}.</p></div>`;
@@ -186,7 +224,7 @@
 
         const itemsHtml = (order.items || []).map(i => `
           <div class="order-item-row">
-            <span class="order-item-name">${escapeHtml(i.productName)}${i.variantName ? ' <em style="color:var(--text-muted)">– '+escapeHtml(i.variantName)+'</em>' : ''}</span>
+            <span class="order-item-name">${escapeHtml(i.productName)}${i.variantName ? ' <em style="color:var(--text-muted)">– '+escapeHtml(i.variantName)+'</em>' : ''}${i.shirtSize ? ' <span style="background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);border-radius:4px;padding:0.1rem 0.4rem;font-size:0.72rem;font-weight:700;">Tam. '+escapeHtml(i.shirtSize)+'</span>' : ''}</span>
             <span class="order-item-lot">${escapeHtml(i.lotName)} × ${i.quantity}</span>
             <span class="order-item-price">${formatBRL(i.price * i.quantity)}</span>
           </div>`).join('');
@@ -233,14 +271,22 @@
       renderOrders();
     }
 
-    // Filtros
+    // Filtro de status
     document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentFilter = btn.dataset.filter;
+        renderStats();
         renderOrders();
       });
+    });
+
+    // Filtro de produto
+    document.getElementById('productFilter').addEventListener('change', function() {
+      currentProduct = this.value;
+      renderStats();
+      renderOrders();
     });
 
     function escapeHtml(str) {

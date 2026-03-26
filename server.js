@@ -345,7 +345,7 @@ app.get('/api/admin/shop/products', requireAuth, (req, res) => {
 app.post('/api/admin/shop/products', requireAuth, (req, res) => {
   uploadImage.single('image')(req, res, err => {
     if (err) return res.status(400).json({ error: err.message });
-    const { name, description, active, availableFrom, availableUntil, variants, lots, imageUrl } = req.body;
+    const { name, description, active, availableFrom, availableUntil, variants, lots, imageUrl, productType, availableSizes, kitDeadline } = req.body;
     if (!name) return res.status(400).json({ error: 'Nome é obrigatório.' });
 
     const products = readJSON('products.json');
@@ -354,6 +354,9 @@ app.post('/api/admin/shop/products', requireAuth, (req, res) => {
       name,
       description: description || '',
       active: active === 'true',
+      productType: productType || 'event',
+      availableSizes: safeParseJSON(availableSizes, []),
+      kitDeadline: kitDeadline || null,
       availableFrom: availableFrom || null,
       availableUntil: availableUntil || null,
       variants: safeParseJSON(variants, []),
@@ -377,7 +380,7 @@ app.put('/api/admin/shop/products/:id', requireAuth, (req, res) => {
     const idx = products.findIndex(p => p.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Produto não encontrado.' });
 
-    const { name, description, active, availableFrom, availableUntil, variants, lots, imageUrl } = req.body;
+    const { name, description, active, availableFrom, availableUntil, variants, lots, imageUrl, productType, availableSizes, kitDeadline } = req.body;
     const old = products[idx];
 
     if (req.file && old.imageType === 'upload' && old.image) {
@@ -390,6 +393,9 @@ app.put('/api/admin/shop/products/:id', requireAuth, (req, res) => {
       name: name || old.name,
       description: description !== undefined ? description : old.description,
       active: active !== undefined ? active === 'true' : old.active,
+      productType: productType || old.productType || 'event',
+      availableSizes: availableSizes ? safeParseJSON(availableSizes, old.availableSizes || []) : (old.availableSizes || []),
+      kitDeadline: kitDeadline !== undefined ? (kitDeadline || null) : (old.kitDeadline || null),
       availableFrom: availableFrom !== undefined ? (availableFrom || null) : old.availableFrom,
       availableUntil: availableUntil !== undefined ? (availableUntil || null) : old.availableUntil,
       variants: variants ? safeParseJSON(variants, old.variants) : old.variants,

@@ -44,7 +44,7 @@ function renderCart() {
           ${imgEl}
           <div>
             <div class="cart-item-name">${escapeHtml(item.productName)}</div>
-            <div class="cart-item-variant">${escapeHtml(item.lotName)}${item.variantName ? ' – ' + item.variantName : ''}</div>
+            <div class="cart-item-variant">${escapeHtml(item.lotName)}${item.variantName ? ' – ' + escapeHtml(item.variantName) : ''}${item.shirtSize ? ' · Tam. <strong>' + escapeHtml(item.shirtSize) + '</strong>' : ''}</div>
           </div>
         </div>
         <div class="cart-item-price">${formatBRL(item.price)}</div>
@@ -235,6 +235,8 @@ async function handleCheckout(e) {
     return;
   }
 
+  const total = getCartTotal();
+
   const items = cart.map(i => ({
     productId: i.productId,
     productName: i.productName,
@@ -242,6 +244,7 @@ async function handleCheckout(e) {
     lotName: i.lotName,
     variantId: i.variantId,
     variantName: i.variantName,
+    shirtSize: i.shirtSize || null,
     price: i.price,
     quantity: i.quantity
   }));
@@ -273,15 +276,61 @@ async function handleCheckout(e) {
   }
 }
 
+function generatePixPayload(pixKey, pixName, amount, txid) {
+  function tlv(id, value) {
+    return id + String(value.length).padStart(2, '0') + value;
+  }
+  function crc16(str) {
+    let crc = 0xFFFF;
+    for (let i = 0; i < str.length; i++) {
+      crc ^= str.charCodeAt(i) << 8;
+      for (let j = 0; j < 8; j++) {
+        crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+      }
+    }
+    return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+  }
+
+  const merchantAccount = tlv('26',
+    tlv('00', 'br.gov.bcb.pix') +
+    tlv('01', pixKey)
+  );
+  const addlData = tlv('62', tlv('05', (txid || '***').substring(0, 25)));
+  const name = (pixName || 'DeMolay Piaui')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Za-z0-9 ]/g, '').substring(0, 25);
+
+  let payload =
+    tlv('00', '01') +
+    merchantAccount +
+    tlv('52', '0000') +
+    tlv('53', '986') +
+    tlv('54', Number(amount).toFixed(2)) +
+    tlv('58', 'BR') +
+    tlv('59', name) +
+    tlv('60', 'Teresina') +
+    addlData +
+    '6304';
+
+  return payload + crc16(payload);
+}
+
 async function showSuccessModal(order, customer, total) {
   let cfg = { pixKey: '', pixType: 'email', pixName: '', whatsapp: '' };
   try { cfg = await fetch('/api/shop/config').then(r => r.json()); } catch {}
 
+  const pixPayload = cfg.pixKey
+    ? generatePixPayload(cfg.pixKey, cfg.pixName, total, order.id.slice(0, 25))
+    : null;
+
   const pixSection = cfg.pixKey ? `
     <div style="margin:1.25rem 0 0;">
-      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem;">
-        Realize o pagamento via <strong style="color:var(--white)">PIX</strong> e envie o comprovante pelo WhatsApp:
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.75rem;">
+        Realize o pagamento via <strong style="color:var(--green)">PIX</strong> e envie o comprovante pelo WhatsApp:
       </p>
+      <div id="pix-qr-wrap" style="display:flex;justify-content:center;margin-bottom:0.75rem;">
+        <div id="pix-qrcode" style="padding:10px;background:#fff;border-radius:10px;border:1px solid var(--border);display:inline-block;"></div>
+      </div>
       <div class="pix-box">
         <div>
           <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.2rem;">
@@ -292,7 +341,7 @@ async function showSuccessModal(order, customer, total) {
         </div>
         <button class="copy-btn" onclick="navigator.clipboard.writeText('${escapeHtml(cfg.pixKey)}').then(()=>{this.textContent='Copiado ✔';setTimeout(()=>this.textContent='Copiar',2000)})">Copiar</button>
       </div>
-      <p style="font-size:0.85rem;color:var(--text-muted);">
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;">
         Valor a pagar: <strong style="color:var(--gold);font-size:1.1rem;">${formatBRL(total)}</strong>
       </p>
     </div>` : '';
@@ -319,7 +368,7 @@ async function showSuccessModal(order, customer, total) {
       <h2 style="margin-bottom:0.5rem;">Pedido Confirmado!</h2>
       <p style="color:var(--text-muted);font-size:0.9rem;">
         Pedido <strong style="color:var(--gold)">#${order.id.slice(0,8).toUpperCase()}</strong> registrado com sucesso.<br>
-        Obrigado, <strong style="color:var(--white)">${escapeHtml(customer.name)}</strong>!
+        Obrigado, <strong style="color:var(--text-heading)">${escapeHtml(customer.name)}</strong>!
       </p>
       ${pixSection}
       ${waSection}
@@ -330,4 +379,15 @@ async function showSuccessModal(order, customer, total) {
 
   document.body.appendChild(modal);
   modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+
+  if (pixPayload && window.QRCode) {
+    new QRCode(document.getElementById('pix-qrcode'), {
+      text: pixPayload,
+      width: 200,
+      height: 200,
+      colorDark: '#1b7a3e',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
 }

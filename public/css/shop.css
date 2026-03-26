@@ -289,6 +289,61 @@
   box-shadow: 0 2px 8px rgba(27,122,62,0.25);
 }
 
+/* Grid de tamanhos */
+.variant-sizes {
+  gap: 0.4rem;
+}
+
+.variant-sizes .variant-btn {
+  min-width: 48px;
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.variant-price-display {
+  margin-top: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+}
+
+/* Botões de compra */
+.buy-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0;
+}
+
+.btn-buy-now {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, var(--gold), #D4AD3A);
+  color: var(--navy);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 12px rgba(201,160,48,0.25);
+  white-space: nowrap;
+}
+
+.btn-buy-now:hover {
+  filter: brightness(1.06);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(201,160,48,0.35);
+}
+
+.btn-buy-now:active { transform: translateY(0); filter: brightness(0.97); }
+
 /* Quantidade */
 .qty-control {
   display: flex;
@@ -827,6 +882,75 @@ input:checked + .toggle-slider::before { transform: translateX(20px); }
    PRODUTO FORM (admin)
    ============================================= */
 .lots-builder { }
+
+/* Type picker (evento / vestimenta) */
+.product-type-picker {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.type-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1.25rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.type-btn:hover {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.type-btn.active {
+  border-color: var(--green);
+  background: var(--green-dim);
+  color: var(--green);
+  box-shadow: 0 2px 8px rgba(27,122,62,0.15);
+}
+
+/* Size picker grid */
+.size-picker-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.size-toggle-btn {
+  min-width: 52px;
+  padding: 0.55rem 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition);
+}
+
+.size-toggle-btn:hover {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.size-toggle-btn.selected {
+  background: linear-gradient(135deg, var(--green), #1A8F48);
+  border-color: var(--green);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(27,122,62,0.25);
+}
 
 .lot-item-card {
   background: var(--bg);

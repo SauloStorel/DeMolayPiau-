@@ -170,8 +170,87 @@
           </div>
         </div>
 
-        <!-- VARIANTES -->
+        <!-- TIPO DE PRODUTO -->
         <div class="upload-card mb-3">
+          <h3 style="font-size:0.95rem;margin-bottom:1rem;">🎽 Tipo de Produto</h3>
+          <input type="hidden" id="p-type" name="productType" value="event">
+          <div class="product-type-picker">
+            <button type="button" class="type-btn active" data-type="event">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Evento sem camisa
+            </button>
+            <button type="button" class="type-btn" data-type="event_with_shirt">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h8M8 17h5"/></svg>
+              Evento com camisa
+            </button>
+            <button type="button" class="type-btn" data-type="clothing">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/></svg>
+              Camisa
+            </button>
+          </div>
+
+          <!-- Evento sem camisa: categorias -->
+          <div id="event-cats-section" style="display:none;margin-top:1.25rem;">
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem;font-weight:600;">Categorias de inscrição — clique para selecionar:</p>
+            <div class="size-picker-grid">
+              <button type="button" class="size-toggle-btn ec-cat-btn" data-ecat="DeMolay Ativo" style="min-width:auto;padding:0.5rem 0.85rem;">DeMolay Ativo</button>
+              <button type="button" class="size-toggle-btn ec-cat-btn" data-ecat="Sênior/Maçom" style="min-width:auto;padding:0.5rem 0.85rem;">Sênior/Maçom</button>
+              <button type="button" class="size-toggle-btn ec-cat-btn" data-ecat="Convidado" style="min-width:auto;padding:0.5rem 0.85rem;">Convidado</button>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.6rem;">Categorias adicionais podem ser inseridas manualmente abaixo.</p>
+          </div>
+
+          <!-- Seletor de tamanhos (só para vestimenta) -->
+          <div id="clothing-sizes-section" style="display:none;margin-top:1.25rem;">
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem;font-weight:600;">Tamanhos disponíveis — clique para selecionar:</p>
+            <div class="size-picker-grid">
+              <button type="button" class="size-toggle-btn" data-size="PP">PP</button>
+              <button type="button" class="size-toggle-btn" data-size="P">P</button>
+              <button type="button" class="size-toggle-btn" data-size="M">M</button>
+              <button type="button" class="size-toggle-btn" data-size="G">G</button>
+              <button type="button" class="size-toggle-btn" data-size="GG">GG</button>
+              <button type="button" class="size-toggle-btn" data-size="XG">XG</button>
+              <button type="button" class="size-toggle-btn" data-size="2XG">2XG</button>
+              <button type="button" class="size-toggle-btn" data-size="3XG">3XG</button>
+            </div>
+          </div>
+
+          <!-- Evento com Camisa: categorias + tamanhos -->
+          <div id="event-shirt-section" style="display:none;margin-top:1.25rem;">
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem;font-weight:600;">Categorias de inscrição — clique para selecionar:</p>
+            <div class="size-picker-grid" id="ews-categories-grid">
+              <button type="button" class="size-toggle-btn ews-cat-btn" data-cat="DeMolay Ativo – Com Kit" style="min-width:auto;padding:0.5rem 0.85rem;">DeMolay Ativo – Com Kit</button>
+              <button type="button" class="size-toggle-btn ews-cat-btn" data-cat="DeMolay Ativo – Sem Kit" style="min-width:auto;padding:0.5rem 0.85rem;">DeMolay Ativo – Sem Kit</button>
+              <button type="button" class="size-toggle-btn ews-cat-btn" data-cat="Sênior/Maçom – Com Kit" style="min-width:auto;padding:0.5rem 0.85rem;">Sênior/Maçom – Com Kit</button>
+              <button type="button" class="size-toggle-btn ews-cat-btn" data-cat="Sênior/Maçom – Sem Kit" style="min-width:auto;padding:0.5rem 0.85rem;">Sênior/Maçom – Sem Kit</button>
+              <button type="button" class="size-toggle-btn ews-cat-btn" data-cat="Convidado – Com Kit" style="min-width:auto;padding:0.5rem 0.85rem;">Convidado – Com Kit</button>
+              <button type="button" class="size-toggle-btn ews-cat-btn" data-cat="Convidado – Sem Kit" style="min-width:auto;padding:0.5rem 0.85rem;">Convidado – Sem Kit</button>
+            </div>
+            <div class="form-group" style="margin:1.25rem 0 0;">
+              <label for="p-kit-deadline" style="display:flex;align-items:center;gap:0.4rem;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                Kit disponível até
+              </label>
+              <input type="datetime-local" id="p-kit-deadline" class="form-control" style="max-width:280px;">
+              <span style="font-size:0.75rem;color:var(--text-muted);">Após esta data, apenas inscrições <strong>Sem Kit</strong> estarão disponíveis.</span>
+            </div>
+
+            <p style="font-size:0.82rem;color:var(--text-muted);margin:1.25rem 0 0.75rem;font-weight:600;">Tamanhos de camisa disponíveis — clique para selecionar:</p>
+            <div class="size-picker-grid" id="ews-sizes-grid">
+              <button type="button" class="size-toggle-btn ews-size-btn" data-ews-size="PP">PP</button>
+              <button type="button" class="size-toggle-btn ews-size-btn" data-ews-size="P">P</button>
+              <button type="button" class="size-toggle-btn ews-size-btn" data-ews-size="M">M</button>
+              <button type="button" class="size-toggle-btn ews-size-btn" data-ews-size="G">G</button>
+              <button type="button" class="size-toggle-btn ews-size-btn" data-ews-size="GG">GG</button>
+              <button type="button" class="size-toggle-btn ews-size-btn" data-ews-size="XG">XG</button>
+              <button type="button" class="size-toggle-btn ews-size-btn" data-ews-size="2XG">2XG</button>
+              <button type="button" class="size-toggle-btn ews-size-btn" data-ews-size="3XG">3XG</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- VARIANTES (apenas para eventos) -->
+        <div class="upload-card mb-3" id="variants-card">
           <h3 style="font-size:0.95rem;margin-bottom:0.5rem;">🏷️ Tipos de Ingresso / Variantes <span style="font-size:0.75rem;color:var(--text-muted);font-family:var(--font-body);font-weight:400;">(opcional)</span></h3>
           <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;">Ex: DeMolay Ativo, Sênior/Maçom, Convidado. Se não houver variantes, o lote terá preço único.</p>
           <div id="variants-list" class="d-flex flex-wrap gap-1" style="min-height:32px;margin-bottom:0.75rem;"></div>
