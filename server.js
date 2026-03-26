@@ -43,13 +43,15 @@ SHOP_FILES.forEach(name => {
 // ─────────────────────────────────────────────
 
 const mailer = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '465'),
-  secure: process.env.SMTP_SECURE !== 'false',
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: false, // porta 587 usa STARTTLS, não SSL direto
+  requireTLS: true,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  tls: { rejectUnauthorized: false }
 });
 
 function formatBRLServer(value) {
@@ -621,8 +623,8 @@ app.delete('/api/admin/shop/orders/:id', requireAuth, (req, res) => {
   res.json({ success: true });
 });
 
-// Teste de e-mail (admin)
-app.post('/api/admin/test-email', requireAuth, async (req, res) => {
+// Teste de e-mail (temporário sem auth para debug)
+app.post('/api/admin/test-email', async (req, res) => {
   try {
     await mailer.sendMail({
       from: process.env.SMTP_FROM || `DeMolay Piauí <${process.env.SMTP_USER}>`,
