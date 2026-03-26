@@ -123,7 +123,7 @@ async function sendConfirmationEmail(order) {
               </tr>
               <tr>
                 <td style="background:#f7f7f7;border-radius:6px;padding:14px 16px;font-size:14px;color:#555;line-height:1.8;">
-                  <strong style="color:#333;">N° do Pedido:</strong> #${order.id.slice(0, 8).toUpperCase()}<br>
+                  <strong style="color:#333;">N° do Pedido:</strong> ${order.orderNumber || '#' + order.id.slice(0, 8).toUpperCase()}<br>
                   <strong style="color:#333;">E-mail:</strong> ${order.customer.email}<br>
                   <strong style="color:#333;">Telefone:</strong> ${order.customer.phone}<br>
                   ${order.customer.chapter ? `<strong style="color:#333;">Capítulo:</strong> ${order.customer.chapter}<br>` : ''}
@@ -155,7 +155,7 @@ async function sendConfirmationEmail(order) {
   await mailer.sendMail({
     from: process.env.SMTP_FROM || `DeMolay Piauí <${process.env.SMTP_USER}>`,
     to: order.customer.email,
-    subject: `✅ Inscrição confirmada — Pedido #${order.id.slice(0, 8).toUpperCase()}`,
+    subject: `✅ Inscrição confirmada — ${order.orderNumber || '#' + order.id.slice(0, 8).toUpperCase()}`,
     html,
   });
 }
@@ -471,16 +471,25 @@ app.post('/api/shop/orders', orderLimiter, (req, res) => {
   }
   writeJSON('products.json', products);
 
+  const orders = readJSON('orders.json');
+
+  // Gera número sequencial DMPI00000001
+  const lastNum = orders.reduce((max, o) => {
+    const m = (o.orderNumber || '').match(/^DMPI(\d+)$/);
+    return m ? Math.max(max, parseInt(m[1])) : max;
+  }, 0);
+  const orderNumber = 'DMPI' + String(lastNum + 1).padStart(8, '0');
+
   const order = {
     id: uuidv4(),
+    orderNumber,
     createdAt: new Date().toISOString(),
     status: 'pending',
     customer,
     items,
-    total: calculatedTotal, // total calculado no servidor, nunca confiado no cliente
+    total: calculatedTotal,
     notes: notes || ''
   };
-  const orders = readJSON('orders.json');
   orders.unshift(order);
   writeJSON('orders.json', orders);
   res.json({ success: true, order });

@@ -347,7 +347,7 @@ async function showSuccessModal(order, customer, total) {
     </div>` : '';
 
   const waSection = cfg.whatsapp ? `
-    <a href="https://wa.me/${escapeHtml(cfg.whatsapp)}?text=${encodeURIComponent(`Olá! Realizei uma inscrição no site DeMolay Piauí.\n\nPedido: #${order.id.slice(0,8).toUpperCase()}\nNome: ${customer.name}\nTotal: ${formatBRL(total)}\n\nSegue comprovante de pagamento.`)}"
+    <a href="https://wa.me/${escapeHtml(cfg.whatsapp)}?text=${encodeURIComponent(`Olá! Realizei uma inscrição no site DeMolay Piauí.\n\nPedido: ${order.orderNumber || '#' + order.id.slice(0,8).toUpperCase()}\nNome: ${customer.name}\nTotal: ${formatBRL(total)}\n\nSegue comprovante de pagamento.`)}"
       target="_blank" rel="noopener"
       class="btn btn-primary w-full mt-2" style="justify-content:center;background:var(--piaui-green);">
       <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
@@ -367,7 +367,7 @@ async function showSuccessModal(order, customer, total) {
       </div>
       <h2 style="margin-bottom:0.5rem;">Pedido Confirmado!</h2>
       <p style="color:var(--text-muted);font-size:0.9rem;">
-        Pedido <strong style="color:var(--gold)">#${order.id.slice(0,8).toUpperCase()}</strong> registrado com sucesso.<br>
+        Pedido <strong style="color:var(--gold)">${order.orderNumber || '#' + order.id.slice(0,8).toUpperCase()}</strong> registrado com sucesso.<br>
         Obrigado, <strong style="color:var(--text-heading)">${escapeHtml(customer.name)}</strong>!
       </p>
       ${pixSection}

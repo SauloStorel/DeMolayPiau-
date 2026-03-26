@@ -263,7 +263,7 @@
               <div class="order-card-left">
                 <span class="order-customer-name">${escapeHtml(order.customer.name)}</span>
                 <span class="status-badge status-${order.status}">${statusLabels[order.status]}</span>
-                <span class="order-id">#${order.id.slice(0,8).toUpperCase()}</span>
+                <span class="order-id">${order.orderNumber || '#' + order.id.slice(0,8).toUpperCase()}</span>
                 <span class="order-date">${date}</span>
               </div>
               <div class="order-card-right">
