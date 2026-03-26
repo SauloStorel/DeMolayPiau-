@@ -33,7 +33,7 @@
         "price": 60,
         "variantPrices": {},
         "maxQuantity": null,
-        "soldQuantity": 2
+        "soldQuantity": 3
       }
     ],
     "image": "img-6e00965b-be75-48b5-bdd9-c861b1161faf.png",
@@ -84,7 +84,7 @@
           "v_ec_Sênior/Maçom": 180
         },
         "maxQuantity": null,
-        "soldQuantity": 3
+        "soldQuantity": 5
       },
       {
         "id": "l_1774483002529",

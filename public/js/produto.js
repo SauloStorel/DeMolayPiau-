@@ -164,6 +164,7 @@
           <input type="number" class="qty-input" id="qtyInput" value="${quantity}" min="1" max="20">
           <button class="qty-btn" id="qtyPlus">+</button>
         </div>
+        <div id="buy-error" style="display:none;font-size:0.82rem;color:var(--danger);margin-bottom:0.4rem;"></div>
         <div class="buy-actions">
           <button class="btn btn-primary" id="addToCartBtn" style="justify-content:center;font-size:1rem;padding:0.85rem;flex:1;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
@@ -286,7 +287,7 @@
 
       // Valida tamanho quando "Com Kit"
       if (variantNeedsSize(selectedVariantId) && !selectedShirtSize) {
-        alert('Selecione o tamanho da camisa para continuar.');
+        showBuyError('Selecione o tamanho da camisa para continuar.');
         return null;
       }
 
@@ -307,7 +308,7 @@
     // Adicionar ao carrinho
     document.getElementById('addToCartBtn')?.addEventListener('click', () => {
       const item = buildCartItem();
-      if (!item) return alert('Selecione uma opção.');
+      if (!item) return;
       addToCart(item);
 
       const btn = document.getElementById('addToCartBtn');
@@ -327,9 +328,17 @@
     // Comprar Agora — adiciona e vai direto ao checkout
     document.getElementById('buyNowBtn')?.addEventListener('click', () => {
       const item = buildCartItem();
-      if (!item) return alert('Selecione uma opção.');
+      if (!item) return;
       addToCart(item);
       location.href = '/carrinho.html';
     });
+  }
+
+  function showBuyError(msg) {
+    const el = document.getElementById('buy-error');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 3500);
   }
 })();

@@ -492,7 +492,7 @@ app.post('/api/shop/orders', orderLimiter, (req, res) => {
   };
   orders.unshift(order);
   writeJSON('orders.json', orders);
-  res.json({ success: true, order });
+  res.status(201).json({ success: true, order });
 });
 
 // ─────────────────────────────────────────────
@@ -632,8 +632,8 @@ app.delete('/api/admin/shop/orders/:id', requireAuth, (req, res) => {
   res.json({ success: true });
 });
 
-// Teste de e-mail (temporário sem auth para debug)
-app.post('/api/admin/test-email', async (req, res) => {
+// Teste de e-mail
+app.post('/api/admin/test-email', requireAuth, async (req, res) => {
   try {
     await mailer.sendMail({
       from: process.env.SMTP_FROM || `DeMolay Piauí <${process.env.SMTP_USER}>`,

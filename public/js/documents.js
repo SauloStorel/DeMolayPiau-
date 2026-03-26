@@ -5,7 +5,7 @@
 
 function escapeHtml(str) {
   const d = document.createElement('div');
-  d.textContent = str;
+  d.textContent = String(str == null ? '' : str);
   return d.innerHTML;
 }
 

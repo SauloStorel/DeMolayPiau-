@@ -229,7 +229,8 @@ async function handleUpload(e) {
 
 // ── Delete ────────────────────────────────────
 async function handleDelete(id, title) {
-  if (!confirm(`Remover o documento "${title}"? Esta ação não pode ser desfeita.`)) return;
+  const confirmed = await adminConfirm(`Remover "${title}"? Esta ação não pode ser desfeita.`);
+  if (!confirmed) return;
 
   try {
     const res = await fetch(`/api/admin/docs/${currentCategory}/${id}`, { method: 'DELETE' });
@@ -237,11 +238,52 @@ async function handleDelete(id, title) {
       loadCategory(currentCategory);
     } else {
       const data = await res.json();
-      alert(data.error || 'Erro ao remover documento.');
+      adminToast(data.error || 'Erro ao remover documento.', 'error');
     }
   } catch {
-    alert('Erro de conexão. Tente novamente.');
+    adminToast('Erro de conexão. Tente novamente.', 'error');
   }
+}
+
+// ── Modal de confirmação programático ─────────
+function adminConfirm(message) {
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    overlay.innerHTML = `
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem;max-width:380px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.35);">
+        <div style="display:flex;align-items:center;gap:0.85rem;margin-bottom:1.25rem;">
+          <div style="width:40px;height:40px;border-radius:50%;background:rgba(220,53,69,0.12);border:1px solid var(--danger);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" width="18" height="18"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+          </div>
+          <p style="margin:0;font-size:0.9rem;color:var(--text-muted);">${escapeHtml(message)}</p>
+        </div>
+        <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
+          <button id="_adminCancel" class="btn btn-outline" style="font-size:0.88rem;">Cancelar</button>
+          <button id="_adminConfirm" class="btn" style="background:var(--danger);color:#fff;border-color:var(--danger);font-size:0.88rem;">Remover</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const close = (val) => { overlay.remove(); resolve(val); };
+    overlay.addEventListener('click', e => { if (e.target === overlay) close(false); });
+    overlay.querySelector('#_adminCancel').addEventListener('click', () => close(false));
+    overlay.querySelector('#_adminConfirm').addEventListener('click', () => close(true));
+  });
+}
+
+function adminToast(msg, type = 'error') {
+  let t = document.getElementById('_admin-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '_admin-toast';
+    t.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9998;padding:0.75rem 1.25rem;border-radius:var(--radius);color:#fff;font-size:0.9rem;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,0.25);transition:opacity 0.3s;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.background = type === 'error' ? 'var(--danger)' : '#1b7a3e';
+  t.style.opacity = '1';
+  clearTimeout(t._to);
+  t._to = setTimeout(() => { t.style.opacity = '0'; }, 3000);
 }
 
 // ── Helpers ───────────────────────────────────

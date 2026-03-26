@@ -378,7 +378,9 @@ async function showSuccessModal(order, customer, total) {
     </div>`;
 
   document.body.appendChild(modal);
-  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  modal.addEventListener('click', e => {
+    if (e.target === modal) { modal.remove(); renderCart(); }
+  });
 
   // Botão copiar PIX — usa addEventListener para evitar injeção via inline handler
   const copyBtn = document.getElementById('pix-copy-btn');
