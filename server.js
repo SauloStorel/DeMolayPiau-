@@ -1,7 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+const rateLimit = require('express-rate-limit');
 const multer = require('multer');
+const nodemailer = require('nodemailer');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
@@ -35,6 +37,126 @@ SHOP_FILES.forEach(name => {
     fs.writeFileSync(file, defaultVal, 'utf8');
   }
 });
+
+// ─────────────────────────────────────────────
+// E-MAIL (nodemailer)
+// ─────────────────────────────────────────────
+
+const mailer = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT || '465'),
+  secure: process.env.SMTP_SECURE !== 'false',
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
+
+function formatBRLServer(value) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+}
+
+async function sendConfirmationEmail(order) {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return;
+
+  const itemsRows = (order.items || []).map(i => {
+    const name = i.variantName ? `${i.productName} – ${i.variantName}` : i.productName;
+    const size = i.shirtSize ? ` (Tamanho: ${i.shirtSize})` : '';
+    return `
+      <tr>
+        <td style="padding:8px 12px;border-bottom:1px solid #e8e8e8;">${name}${size}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e8e8e8;text-align:center;">${i.quantity}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e8e8e8;text-align:right;">${formatBRLServer(i.price * i.quantity)}</td>
+      </tr>`;
+  }).join('');
+
+  const html = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:30px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+
+        <!-- Cabeçalho -->
+        <tr>
+          <td style="background:#0b1f3a;padding:32px 40px;text-align:center;">
+            <p style="margin:0;color:#c9a030;font-size:13px;letter-spacing:2px;text-transform:uppercase;">Ordem DeMolay Piauiense</p>
+            <h1 style="margin:8px 0 0;color:#ffffff;font-size:22px;">Inscrição Confirmada!</h1>
+          </td>
+        </tr>
+
+        <!-- Corpo -->
+        <tr>
+          <td style="padding:36px 40px;">
+            <p style="margin:0 0 16px;font-size:15px;color:#333;">Olá, <strong>${order.customer.name}</strong>!</p>
+            <p style="margin:0 0 24px;font-size:15px;color:#555;line-height:1.6;">
+              Temos o prazer de confirmar que seu pedido foi <strong style="color:#1b7a3e;">aprovado e registrado com sucesso</strong>.
+              Bem-vindo(a) a mais este momento da fraternidade DeMolay!
+            </p>
+
+            <!-- Resumo do pedido -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin-bottom:24px;">
+              <thead>
+                <tr style="background:#f7f7f7;">
+                  <th style="padding:10px 12px;text-align:left;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.05em;">Produto</th>
+                  <th style="padding:10px 12px;text-align:center;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.05em;">Qtd</th>
+                  <th style="padding:10px 12px;text-align:right;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.05em;">Valor</th>
+                </tr>
+              </thead>
+              <tbody>${itemsRows}</tbody>
+              <tfoot>
+                <tr style="background:#f7f7f7;">
+                  <td colspan="2" style="padding:10px 12px;font-weight:bold;font-size:14px;">Total</td>
+                  <td style="padding:10px 12px;text-align:right;font-weight:bold;font-size:15px;color:#c9a030;">${formatBRLServer(order.total)}</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <!-- Dados do participante -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+              <tr>
+                <td style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.05em;padding-bottom:8px;">Dados do Participante</td>
+              </tr>
+              <tr>
+                <td style="background:#f7f7f7;border-radius:6px;padding:14px 16px;font-size:14px;color:#555;line-height:1.8;">
+                  <strong style="color:#333;">N° do Pedido:</strong> #${order.id.slice(0, 8).toUpperCase()}<br>
+                  <strong style="color:#333;">E-mail:</strong> ${order.customer.email}<br>
+                  <strong style="color:#333;">Telefone:</strong> ${order.customer.phone}<br>
+                  ${order.customer.chapter ? `<strong style="color:#333;">Capítulo:</strong> ${order.customer.chapter}<br>` : ''}
+                </td>
+              </tr>
+            </table>
+
+            <p style="font-size:14px;color:#555;margin:0 0 8px;">
+              Em caso de dúvidas, entre em contato com a jurisdição pelo WhatsApp ou responda este e-mail.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Rodapé -->
+        <tr>
+          <td style="background:#0b1f3a;padding:20px 40px;text-align:center;">
+            <p style="margin:0;color:#8899aa;font-size:12px;">
+              Ordem DeMolay Piauiense — <a href="https://demolaypiaui.org.br" style="color:#c9a030;text-decoration:none;">demolaypiaui.org.br</a>
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  await mailer.sendMail({
+    from: process.env.SMTP_FROM || `DeMolay Piauí <${process.env.SMTP_USER}>`,
+    to: order.customer.email,
+    subject: `✅ Inscrição confirmada — Pedido #${order.id.slice(0, 8).toUpperCase()}`,
+    html,
+  });
+}
 
 // Multer — imagens de produto, máximo 5MB
 const imgStorage = multer.diskStorage({
@@ -80,7 +202,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || `dev-secret-${Date.now()}`,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 8 * 60 * 60 * 1000 } // 8 horas
+  cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 8 * 60 * 60 * 1000 } // 8 horas
 }));
 
 
@@ -103,10 +225,30 @@ function requireAuth(req, res, next) {
 });
 
 // ─────────────────────────────────────────────
+// RATE LIMITERS
+// ─────────────────────────────────────────────
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 10,
+  message: { error: 'Muitas tentativas de login. Aguarde 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const orderLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minuto
+  max: 5,
+  message: { error: 'Muitas requisições. Aguarde um momento.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// ─────────────────────────────────────────────
 // AUTH ROUTES
 // ─────────────────────────────────────────────
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', loginLimiter, (req, res) => {
   const { email, password } = req.body;
   if (
     email === process.env.ADMIN_USER &&
@@ -154,6 +296,9 @@ app.post('/api/admin/docs/:category', requireAuth, (req, res, next) => {
     const { title, url } = req.body;
     if (!title || (!req.file && !url)) {
       return res.status(400).json({ error: 'Título e arquivo ou link são obrigatórios.' });
+    }
+    if (!req.file && url && !/^https?:\/\//i.test(url)) {
+      return res.status(400).json({ error: 'URL inválida. Use http:// ou https://.' });
     }
 
     const file = path.join(DATA_DIR, `${category}-docs.json`);
@@ -262,11 +407,11 @@ app.get('/api/shop/config', (req, res) => {
 });
 
 // Criar pedido
-app.post('/api/shop/orders', (req, res) => {
+app.post('/api/shop/orders', orderLimiter, (req, res) => {
   const { customer, items, notes } = req.body;
 
   // Validação básica de dados do cliente
-  if (!customer?.name || !customer?.email || !items?.length) {
+  if (!customer?.name || !customer?.email || !customer?.phone || !customer?.chapter || !items?.length) {
     return res.status(400).json({ error: 'Dados do pedido incompletos.' });
   }
   // Validação de formato de email
@@ -438,15 +583,34 @@ app.get('/api/admin/shop/orders', requireAuth, (req, res) => {
   res.json(readJSON('orders.json'));
 });
 
-app.patch('/api/admin/shop/orders/:id/status', requireAuth, (req, res) => {
+app.patch('/api/admin/shop/orders/:id/status', requireAuth, async (req, res) => {
   const { status } = req.body;
   if (!['pending','paid','cancelled'].includes(status)) return res.status(400).json({ error: 'Status inválido.' });
   const orders = readJSON('orders.json');
   const idx = orders.findIndex(o => o.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Pedido não encontrado.' });
+
+  const previousStatus = orders[idx].status;
   orders[idx].status = status;
   orders[idx].updatedAt = new Date().toISOString();
   writeJSON('orders.json', orders);
+
+  // Envia e-mail de confirmação ao marcar como pago
+  if (status === 'paid' && previousStatus !== 'paid') {
+    sendConfirmationEmail(orders[idx]).catch(err =>
+      console.error('[EMAIL] Falha ao enviar e-mail de confirmação:', err.message)
+    );
+  }
+
+  res.json({ success: true });
+});
+
+// Deletar pedido
+app.delete('/api/admin/shop/orders/:id', requireAuth, (req, res) => {
+  const orders = readJSON('orders.json');
+  const exists = orders.some(o => o.id === req.params.id);
+  if (!exists) return res.status(404).json({ error: 'Pedido não encontrado.' });
+  writeJSON('orders.json', orders.filter(o => o.id !== req.params.id));
   res.json({ success: true });
 });
 

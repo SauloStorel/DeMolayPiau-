@@ -339,7 +339,7 @@ async function showSuccessModal(order, customer, total) {
           <code>${escapeHtml(cfg.pixKey)}</code>
           ${cfg.pixName ? `<div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">Favorecido: ${escapeHtml(cfg.pixName)}</div>` : ''}
         </div>
-        <button class="copy-btn" onclick="navigator.clipboard.writeText('${escapeHtml(cfg.pixKey)}').then(()=>{this.textContent='Copiado ✔';setTimeout(()=>this.textContent='Copiar',2000)})">Copiar</button>
+        <button class="copy-btn" id="pix-copy-btn">Copiar</button>
       </div>
       <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;">
         Valor a pagar: <strong style="color:var(--gold);font-size:1.1rem;">${formatBRL(total)}</strong>
@@ -379,6 +379,17 @@ async function showSuccessModal(order, customer, total) {
 
   document.body.appendChild(modal);
   modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+
+  // Botão copiar PIX — usa addEventListener para evitar injeção via inline handler
+  const copyBtn = document.getElementById('pix-copy-btn');
+  if (copyBtn && cfg.pixKey) {
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(cfg.pixKey).then(() => {
+        copyBtn.textContent = 'Copiado ✔';
+        setTimeout(() => { copyBtn.textContent = 'Copiar'; }, 2000);
+      });
+    });
+  }
 
   if (pixPayload && window.QRCode) {
     new QRCode(document.getElementById('pix-qrcode'), {
