@@ -6,7 +6,24 @@
     "active": true,
     "availableFrom": "2026-03-23T21:56",
     "availableUntil": "2026-04-01T21:56",
-    "variants": [],
+    "variants": [
+      {
+        "id": "v_P",
+        "name": "P"
+      },
+      {
+        "id": "v_M",
+        "name": "M"
+      },
+      {
+        "id": "v_G",
+        "name": "G"
+      },
+      {
+        "id": "v_GG",
+        "name": "GG"
+      }
+    ],
     "lots": [
       {
         "id": "l_1774400472047",
@@ -16,13 +33,14 @@
         "price": 60,
         "variantPrices": {},
         "maxQuantity": null,
-        "soldQuantity": 0
+        "soldQuantity": 2
       }
     ],
     "image": "img-6e00965b-be75-48b5-bdd9-c861b1161faf.png",
-    "imageUrl": null,
+    "imageUrl": "",
     "imageType": "upload",
-    "createdAt": "2026-03-25T01:01:38.105Z"
+    "createdAt": "2026-03-25T01:01:38.105Z",
+    "updatedAt": "2026-03-25T23:54:18.620Z"
   },
   {
     "id": "0f39ae4c-2c3c-443a-8799-aa5dfce88350",
@@ -33,12 +51,12 @@
     "availableUntil": "2026-05-29T20:42",
     "variants": [
       {
-        "id": "v_1774395972173",
+        "id": "v_ec_DeMolayAtivo",
         "name": "DeMolay Ativo"
       },
       {
-        "id": "v_1774395981404",
-        "name": "Senior/Maçon"
+        "id": "v_ec_Sênior/Maçom",
+        "name": "Sênior/Maçom"
       }
     ],
     "lots": [
@@ -46,33 +64,46 @@
         "id": "l_1774395701081",
         "name": "1º Lote",
         "availableFrom": "2026-03-23T23:43:00.000Z",
-        "availableUntil": "2026-03-25T23:43:00.000Z",
+        "availableUntil": "2026-03-25T23:55:00.000Z",
         "price": null,
         "variantPrices": {
-          "v_1774395972173": 150,
-          "v_1774395981404": 180
+          "v_ec_DeMolayAtivo": 120,
+          "v_ec_Sênior/Maçom": 150
         },
         "maxQuantity": 30,
-        "soldQuantity": 0
+        "soldQuantity": 2
       },
       {
         "id": "l_1774396032296",
         "name": "2º Lote",
-        "availableFrom": "2026-03-26T23:47:00.000Z",
+        "availableFrom": "2026-03-25T23:47:00.000Z",
         "availableUntil": "2026-03-28T23:47:00.000Z",
         "price": null,
         "variantPrices": {
-          "v_1774395972173": 200,
-          "v_1774395981404": 220
+          "v_ec_DeMolayAtivo": 150,
+          "v_ec_Sênior/Maçom": 180
+        },
+        "maxQuantity": null,
+        "soldQuantity": 3
+      },
+      {
+        "id": "l_1774483002529",
+        "name": "3º Lote",
+        "availableFrom": "2026-03-28T23:48:00.000Z",
+        "availableUntil": "2026-03-30T23:57:00.000Z",
+        "price": null,
+        "variantPrices": {
+          "v_ec_DeMolayAtivo": 180,
+          "v_ec_Sênior/Maçom": 200
         },
         "maxQuantity": null,
         "soldQuantity": 0
       }
     ],
     "image": "img-35163ab5-a4fb-4786-a104-83920634a059.png",
-    "imageUrl": null,
+    "imageUrl": "",
     "imageType": "upload",
     "createdAt": "2026-03-24T23:47:46.003Z",
-    "updatedAt": "2026-03-25T00:42:05.563Z"
+    "updatedAt": "2026-03-26T00:00:31.657Z"
   }
 ]
