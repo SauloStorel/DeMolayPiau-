@@ -192,6 +192,9 @@ const upload = multer({
   }
 });
 
+// Necessário para cookies secure funcionarem atrás do proxy do Render
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -202,7 +205,11 @@ app.use(session({
   secret: process.env.SESSION_SECRET || `dev-secret-${Date.now()}`,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 8 * 60 * 60 * 1000 } // 8 horas
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 8 * 60 * 60 * 1000 // 8 horas
+  }
 }));
 
 
