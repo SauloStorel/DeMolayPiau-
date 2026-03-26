@@ -55,8 +55,7 @@
   --transition:  0.25s ease;
   --transition-slow: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
-  /* Aliases para compatibilidade com código anterior */
-  --navy-border:  var(--border);
+  /* Aliases */
   --text-muted:   #607080;
   --piaui-green:        var(--green);
   --piaui-green-light:  var(--green-light);
@@ -75,6 +74,7 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
 
 img { max-width: 100%; height: auto; display: block; }
 a { color: var(--navy); text-decoration: none; transition: color var(--transition); }
@@ -315,7 +315,7 @@ p:last-child { margin-bottom: 0; }
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-.badge-gold  { background: rgba(201,160,48,0.15); color: #6B4F00; border: 1px solid rgba(201,160,48,0.4); backdrop-filter: blur(4px); }
+.badge-gold  { background: rgba(201,160,48,0.15); color: var(--gold-dim); border: 1px solid rgba(201,160,48,0.4); backdrop-filter: blur(4px); }
 .badge-green { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); backdrop-filter: blur(4px); }
 .badge-blue  { background: rgba(10,34,64,0.08); color: var(--navy); border: 1px solid var(--border-dark); backdrop-filter: blur(4px); }
 
