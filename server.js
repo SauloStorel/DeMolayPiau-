@@ -621,6 +621,21 @@ app.delete('/api/admin/shop/orders/:id', requireAuth, (req, res) => {
   res.json({ success: true });
 });
 
+// Teste de e-mail (admin)
+app.post('/api/admin/test-email', requireAuth, async (req, res) => {
+  try {
+    await mailer.sendMail({
+      from: process.env.SMTP_FROM || `DeMolay Piauí <${process.env.SMTP_USER}>`,
+      to: process.env.SMTP_USER,
+      subject: 'Teste de e-mail — DeMolay Piauí',
+      text: 'Se você recebeu este e-mail, o envio está funcionando corretamente.'
+    });
+    res.json({ success: true, message: 'E-mail enviado com sucesso.' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message, code: err.code });
+  }
+});
+
 // Config da loja (admin)
 app.get('/api/admin/shop/config', requireAuth, (req, res) => {
   res.json(readJSON('shop-config.json'));
