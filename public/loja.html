@@ -122,11 +122,11 @@
 
     function formatPriceRange(p, lot) {
       if (!lot) return '';
-      if (p.variants && p.variants.length > 0 && lot.variantPrices) {
-        const prices = Object.values(lot.variantPrices).filter(v => v != null);
-        if (!prices.length) return '';
-        const min = Math.min(...prices);
-        const max = Math.max(...prices);
+      // Clothing usa preço único no lote (variantes são apenas tamanhos)
+      const vpEntries = lot.variantPrices ? Object.values(lot.variantPrices).filter(v => v != null) : [];
+      if (p.productType !== 'clothing' && p.variants && p.variants.length > 0 && vpEntries.length > 0) {
+        const min = Math.min(...vpEntries);
+        const max = Math.max(...vpEntries);
         if (min === max) return `<div class="product-card-price">${formatBRL(min)}</div>`;
         return `<div class="product-card-price">${formatBRL(min)} <span class="price-range">– ${formatBRL(max)}</span></div>`;
       }

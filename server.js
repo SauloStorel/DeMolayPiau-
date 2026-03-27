@@ -7,6 +7,7 @@ const nodemailer = require('nodemailer');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
+const { google } = require('googleapis');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,17 +43,133 @@ SHOP_FILES.forEach(name => {
 // E-MAIL (nodemailer)
 // ─────────────────────────────────────────────
 
+const smtpPort = parseInt(process.env.SMTP_PORT || '587');
+const smtpSecure = process.env.SMTP_SECURE === 'true' || smtpPort === 465;
+
 const mailer = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false, // porta 587 usa STARTTLS, não SSL direto
-  requireTLS: true,
+  port: smtpPort,
+  secure: smtpSecure,
+  ...(smtpSecure ? {} : { requireTLS: true }),
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
   tls: { rejectUnauthorized: false }
 });
+
+// ─────────────────────────────────────────────
+// GOOGLE SHEETS
+// ─────────────────────────────────────────────
+
+let sheetsApi = null;
+let driveApi  = null;
+
+(function initSheets() {
+  const keyB64 = process.env.GOOGLE_SHEETS_KEY;
+  if (!keyB64) return;
+  try {
+    const creds = JSON.parse(Buffer.from(keyB64, 'base64').toString('utf8'));
+    const auth = new google.auth.JWT(
+      creds.client_email, null, creds.private_key,
+      ['https://www.googleapis.com/auth/spreadsheets',
+       'https://www.googleapis.com/auth/drive.file']
+    );
+    sheetsApi = google.sheets({ version: 'v4', auth });
+    driveApi  = google.drive({ version: 'v3', auth });
+    console.log('[SHEETS] Google Sheets integração ativa.');
+  } catch (err) {
+    console.error('[SHEETS] Falha ao inicializar:', err.message);
+  }
+})();
+
+const SHEETS_CONFIG_FILE = path.join(DATA_DIR, 'sheets-config.json');
+const STATUS_PT = { pending: 'Aguardando', paid: 'Pago', cancelled: 'Cancelado' };
+const SHEET_HEADERS = [
+  'N. Pedido','Nome','E-mail','Telefone','Capítulo',
+  'Produto','Lote','Variante','Tam. Camisa','Qtd',
+  'Preço Unit. (R$)','Total Pedido (R$)','Status','Data'
+];
+
+async function syncOrdersToSheets() {
+  if (!sheetsApi) throw new Error('Google Sheets não configurado. Adicione GOOGLE_SHEETS_KEY no .env');
+
+  const orders   = readJSON('orders.json');
+  const products = readJSON('products.json');
+
+  // Obtém ou cria spreadsheet
+  let cfg = {};
+  try { cfg = JSON.parse(fs.readFileSync(SHEETS_CONFIG_FILE, 'utf8')); } catch {}
+
+  if (!cfg.spreadsheetId) {
+    const created = await driveApi.files.create({
+      requestBody: { name: 'Pedidos — DeMolay Piauí', mimeType: 'application/vnd.google-apps.spreadsheet' },
+      fields: 'id'
+    });
+    cfg.spreadsheetId = created.data.id;
+    fs.writeFileSync(SHEETS_CONFIG_FILE, JSON.stringify(cfg, null, 2));
+  }
+
+  const { spreadsheetId } = cfg;
+
+  // Monta abas: "Todos" + uma por produto
+  const tabMap = new Map(); // tabName -> rows[]
+  tabMap.set('Todos os Pedidos', []);
+
+  orders.forEach(o => {
+    const date = new Date(o.createdAt).toLocaleString('pt-BR');
+    (o.items || []).forEach(item => {
+      const row = [
+        o.orderNumber || o.id.slice(0,8).toUpperCase(),
+        o.customer?.name  || '',
+        o.customer?.email || '',
+        o.customer?.phone || '',
+        o.customer?.chapter || '',
+        item.productName  || '',
+        item.lotName      || '',
+        item.variantName  || '',
+        item.shirtSize    || '',
+        item.quantity     || 1,
+        item.price        || 0,
+        o.total           || 0,
+        STATUS_PT[o.status] || o.status,
+        date
+      ];
+      tabMap.get('Todos os Pedidos').push(row);
+      if (!tabMap.has(item.productName)) tabMap.set(item.productName, []);
+      tabMap.get(item.productName).push(row);
+    });
+  });
+
+  // Garante que cada aba existe
+  const meta = await sheetsApi.spreadsheets.get({ spreadsheetId });
+  const existingTitles = new Set(meta.data.sheets.map(s => s.properties.title));
+  const toCreate = [...tabMap.keys()].filter(t => !existingTitles.has(t));
+
+  if (toCreate.length) {
+    await sheetsApi.spreadsheets.batchUpdate({
+      spreadsheetId,
+      requestBody: { requests: toCreate.map(title => ({ addSheet: { properties: { title } } })) }
+    });
+  }
+
+  // Limpa e reescreve cada aba
+  const ranges = [...tabMap.keys()].map(t => `'${t}'!A:Z`);
+  await sheetsApi.spreadsheets.values.batchClear({ spreadsheetId, requestBody: { ranges } });
+
+  await sheetsApi.spreadsheets.values.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      valueInputOption: 'RAW',
+      data: [...tabMap.entries()].map(([title, rows]) => ({
+        range: `'${title}'!A1`,
+        values: [SHEET_HEADERS, ...rows]
+      }))
+    }
+  });
+
+  return `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
+}
 
 function formatBRLServer(value) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
@@ -620,7 +737,40 @@ app.patch('/api/admin/shop/orders/:id/status', requireAuth, async (req, res) => 
     );
   }
 
+  // Sincroniza planilha automaticamente (se configurado)
+  if (sheetsApi) {
+    syncOrdersToSheets().catch(err =>
+      console.error('[SHEETS] Auto-sync falhou:', err.message)
+    );
+  }
+
   res.json({ success: true });
+});
+
+// Google Sheets — sincronizar manualmente
+app.post('/api/admin/shop/sync-sheets', requireAuth, async (req, res) => {
+  try {
+    const url = await syncOrdersToSheets();
+    res.json({ success: true, url });
+  } catch (err) {
+    console.error('[SHEETS] Erro:', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Google Sheets — URL da planilha atual
+app.get('/api/admin/shop/sheets-url', requireAuth, (req, res) => {
+  try {
+    const cfg = JSON.parse(fs.readFileSync(SHEETS_CONFIG_FILE, 'utf8'));
+    res.json({ url: cfg.spreadsheetId ? `https://docs.google.com/spreadsheets/d/${cfg.spreadsheetId}` : null });
+  } catch {
+    res.json({ url: null });
+  }
+});
+
+// Google Sheets — status da integração
+app.get('/api/admin/shop/sheets-status', requireAuth, (req, res) => {
+  res.json({ configured: !!sheetsApi });
 });
 
 // Deletar pedido

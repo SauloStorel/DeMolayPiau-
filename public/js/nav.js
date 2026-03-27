@@ -64,19 +64,20 @@ function initCounters() {
       if (!entry.isIntersecting) return;
       const el = entry.target;
       const target = parseInt(el.dataset.target, 10);
-      const duration = 1200;
+      const duration = 1600;
       const start = performance.now();
       observer.unobserve(el);
 
       function step(now) {
         const progress = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        // ease-out expo for snappier start
+        const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
         el.textContent = Math.round(eased * target);
         if (progress < 1) requestAnimationFrame(step);
       }
       requestAnimationFrame(step);
     });
-  }, { threshold: 0.5 });
+  }, { threshold: 0.3 });
 
   targets.forEach(el => observer.observe(el));
 }
@@ -92,7 +93,7 @@ function initScrollReveal() {
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
 
   revealEls.forEach(el => observer.observe(el));
 }

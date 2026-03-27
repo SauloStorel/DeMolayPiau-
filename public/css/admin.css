@@ -5,15 +5,16 @@
   min-height: 100vh;
   display: flex; align-items: center; justify-content: center;
   padding: 2rem;
-  background: linear-gradient(160deg, var(--bg-dark) 0%, #0D3520 50%, var(--green) 100%);
+  background: linear-gradient(160deg, var(--bg-dark) 0%, #0A2E1A 40%, #0D3520 60%, var(--green) 100%);
   position: relative;
 }
 .login-page::before {
   content: '';
   position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(27,122,62,0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 30%, rgba(201,160,48,0.08) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(27,122,62,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 30%, rgba(201,160,48,0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(27,122,62,0.08) 0%, transparent 40%);
   pointer-events: none;
 }
 .login-card {
@@ -22,9 +23,13 @@
   border-radius: var(--radius-lg);
   padding: 2.5rem;
   width: 100%; max-width: 420px;
-  box-shadow: 0 12px 48px rgba(10,34,64,0.25);
+  box-shadow: 0 16px 56px rgba(10,34,64,0.3), 0 0 0 1px rgba(0,0,0,0.05);
   position: relative;
-  animation: slideUp 0.5s ease;
+  animation: loginCardIn 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+@keyframes loginCardIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 .login-header { text-align: center; margin-bottom: 2rem; }
 .login-header img { width: 70px; height: 70px; object-fit: contain; margin: 0 auto 1rem; }
@@ -43,8 +48,8 @@
 
 /* Sidebar */
 .admin-sidebar {
-  background: linear-gradient(180deg, var(--green) 0%, #145C2E 100%);
-  border-right: 1px solid rgba(255,255,255,0.1);
+  background: linear-gradient(180deg, var(--green) 0%, #0F4D26 60%, #0A3A1C 100%);
+  border-right: 1px solid rgba(255,255,255,0.08);
   padding: 0 0 2rem;
   position: sticky; top: 0;
   height: 100vh;

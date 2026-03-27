@@ -175,6 +175,7 @@ if (editId) {
   loadProduct();
 } else {
   document.getElementById('form-title').textContent = 'Novo Produto';
+  applyProductType(false);
   addLot(); // começa com 1 lote
 }
 

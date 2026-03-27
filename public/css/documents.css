@@ -32,21 +32,26 @@
   align-items: center;
   gap: 1.25rem;
   box-shadow: var(--shadow-sm);
-  transition: border-color var(--transition), box-shadow 0.3s ease, transform 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 .doc-card:hover {
   border-color: var(--green);
-  box-shadow: 0 6px 20px rgba(27,122,62,0.12);
-  transform: translateX(4px);
+  box-shadow: 0 8px 24px rgba(27,122,62,0.1), 0 0 0 1px rgba(27,122,62,0.06);
+  transform: translateX(6px);
 }
 
 .doc-icon {
   flex-shrink: 0;
-  width: 44px; height: 44px;
+  width: 46px; height: 46px;
   background: var(--green-dim);
   border: 1px solid var(--green-border);
   border-radius: var(--radius);
   display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+.doc-card:hover .doc-icon {
+  transform: scale(1.08);
+  background: rgba(27,122,62,0.25);
 }
 .doc-icon svg { width: 22px; height: 22px; color: var(--green); }
 
