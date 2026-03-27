@@ -8,6 +8,10 @@
     "availableUntil": "2026-04-01T21:56",
     "variants": [
       {
+        "id": "v_PP",
+        "name": "PP"
+      },
+      {
         "id": "v_P",
         "name": "P"
       },
@@ -22,6 +26,10 @@
       {
         "id": "v_GG",
         "name": "GG"
+      },
+      {
+        "id": "v_XG",
+        "name": "XG"
       }
     ],
     "lots": [
@@ -33,14 +41,17 @@
         "price": 60,
         "variantPrices": {},
         "maxQuantity": null,
-        "soldQuantity": 3
+        "soldQuantity": 9
       }
     ],
     "image": "img-6e00965b-be75-48b5-bdd9-c861b1161faf.png",
     "imageUrl": "",
     "imageType": "upload",
     "createdAt": "2026-03-25T01:01:38.105Z",
-    "updatedAt": "2026-03-25T23:54:18.620Z"
+    "updatedAt": "2026-03-26T20:47:19.217Z",
+    "productType": "clothing",
+    "availableSizes": [],
+    "kitDeadline": null
   },
   {
     "id": "0f39ae4c-2c3c-443a-8799-aa5dfce88350",
@@ -84,7 +95,7 @@
           "v_ec_Sênior/Maçom": 180
         },
         "maxQuantity": null,
-        "soldQuantity": 5
+        "soldQuantity": 9
       },
       {
         "id": "l_1774483002529",

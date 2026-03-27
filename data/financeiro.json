@@ -8,5 +8,35 @@
     "tipo": "credito",
     "createdAt": "2026-03-27T12:42:32.871Z",
     "updatedAt": "2026-03-27T12:42:32.871Z"
+  },
+  {
+    "id": "8d2d3f16-a432-44f5-ab20-d4e070894072",
+    "data": "2026-03-27",
+    "categoria": "Transporte",
+    "descricao": "Ida para picos do Saulo MCE",
+    "valor": 200,
+    "tipo": "debito",
+    "createdAt": "2026-03-27T12:49:02.704Z",
+    "updatedAt": "2026-03-27T12:49:02.704Z"
+  },
+  {
+    "id": "c0ace84b-cda4-4424-bc4f-8e20d0af5ae0",
+    "data": "2026-03-27",
+    "categoria": "Serviços",
+    "descricao": "",
+    "valor": 125,
+    "tipo": "credito",
+    "createdAt": "2026-03-27T13:14:40.367Z",
+    "updatedAt": "2026-03-27T13:14:40.367Z"
+  },
+  {
+    "id": "8cacc7cc-063b-49a4-87dd-a7045c730b74",
+    "data": "2026-03-27",
+    "categoria": "Eventos",
+    "descricao": "jsgfhasdhfvsadhfgus",
+    "valor": 123,
+    "tipo": "debito",
+    "createdAt": "2026-03-27T13:20:43.882Z",
+    "updatedAt": "2026-03-27T13:20:43.882Z"
   }
 ]
