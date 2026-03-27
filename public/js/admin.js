@@ -22,6 +22,18 @@ async function checkAuth() {
 
 // ── Logout ────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  const urlCat = new URLSearchParams(location.search).get('cat');
+  if (urlCat && categoryLabels[urlCat]) {
+    currentCategory = urlCat;
+    const link = document.querySelector(`[data-cat="${urlCat}"]`);
+    if (link) {
+      document.querySelectorAll('#sidebarNav [data-cat]').forEach(a => a.classList.remove('active'));
+      link.classList.add('active');
+      const labels = categoryLabels[urlCat];
+      document.getElementById('panelTitle').textContent = labels.title;
+      document.getElementById('panelDesc').textContent = labels.desc;
+    }
+  }
   checkAuth().then(() => {
     loadCategory(currentCategory);
     initUI();
@@ -153,6 +165,10 @@ async function loadCategory(category) {
           </div>
         </div>`;
     }).join('');
+
+    list.querySelectorAll('.admin-doc-item').forEach((item, i) => {
+      item.style.setProperty('--doc-delay', `${Math.min(i * 0.06, 0.4)}s`);
+    });
 
   } catch {
     list.innerHTML = '<p class="text-muted" style="padding:1rem;">Erro ao carregar documentos.</p>';

@@ -9,6 +9,75 @@
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/admin.css">
   <link rel="stylesheet" href="/css/shop.css">
+  <style>
+    @keyframes cardIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes statIn { from { opacity: 0; transform: translateY(10px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(18px) scale(0.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px) scale(0.95); } }
+
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1rem; animation: statIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both; transition: border-color 0.3s, box-shadow 0.3s; }
+    .stat-card:hover { border-color: var(--green); box-shadow: var(--shadow-card); }
+    .stat-card:nth-child(1) { animation-delay: 0.04s; }
+    .stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .stat-card:nth-child(3) { animation-delay: 0.16s; }
+    .stat-card .stat-icon { width: 42px; height: 42px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .stat-card:hover .stat-icon { transform: scale(1.12) rotate(-6deg); }
+    .stat-card .stat-icon svg { width: 18px; height: 18px; }
+    .stat-card .stat-icon.green { background: var(--green-dim); color: var(--green); }
+    .stat-card .stat-icon.blue  { background: rgba(10,34,64,0.06); color: var(--navy); }
+    .stat-card .stat-icon.red   { background: rgba(217,79,79,0.1); color: var(--danger); }
+    .stat-card .stat-data strong { display: block; font-size: 1.35rem; font-weight: 700; color: var(--text-heading); line-height: 1.1; letter-spacing: -0.02em; }
+    .stat-card .stat-data span { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; }
+
+    /* Config collapsible */
+    .config-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); overflow: hidden; }
+    .config-card-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; cursor: pointer; transition: background 0.2s; user-select: none; }
+    .config-card-header:hover { background: rgba(0,0,0,0.015); }
+    .config-card-header h3 { display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; margin: 0; }
+    .config-card-header h3 svg { width: 16px; height: 16px; color: var(--gold); }
+    .config-chevron { transition: transform 0.3s ease; color: var(--text-muted); flex-shrink: 0; }
+    .config-card.open .config-chevron { transform: rotate(180deg); }
+    .config-body { max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(0.22, 0.61, 0.36, 1); }
+    .config-card.open .config-body { max-height: 400px; }
+    .config-body-inner { padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border); padding-top: 1.25rem; }
+
+    /* Search + toolbar */
+    .prod-toolbar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .prod-search { display: flex; align-items: center; gap: 0.5rem; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 24px; padding: 0 0.85rem; flex: 1; transition: border-color 0.25s, box-shadow 0.25s; }
+    .prod-search:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px rgba(27,122,62,0.08); }
+    .prod-search svg { width: 15px; height: 15px; color: var(--text-muted); flex-shrink: 0; transition: color 0.2s; }
+    .prod-search:focus-within svg { color: var(--green); }
+    .prod-search input { border: none; background: transparent; padding: 0.55rem 0; font-family: var(--font-body); font-size: 0.88rem; color: var(--text-body); outline: none; width: 100%; }
+    .prod-search input::placeholder { color: var(--text-muted); }
+
+    /* Product card */
+    .prod-card { display: flex; align-items: center; gap: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: var(--radius-lg); padding: 0.9rem 1.25rem; box-shadow: var(--shadow-sm); animation: cardIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) both; animation-delay: var(--card-delay, 0s); transition: box-shadow 0.25s, border-color 0.25s, transform 0.22s; margin-bottom: 0.65rem; }
+    .prod-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+    .prod-card.is-active { border-left-color: var(--green); }
+    .prod-card.is-inactive { border-left-color: var(--border); opacity: 0.72; }
+    .prod-card.is-inactive:hover { opacity: 1; }
+    .prod-img { width: 60px; height: 60px; border-radius: var(--radius); object-fit: cover; flex-shrink: 0; border: 1px solid var(--border); }
+    .prod-img-placeholder { width: 60px; height: 60px; border-radius: var(--radius); background: var(--bg-section); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .prod-info { flex: 1; min-width: 0; }
+    .prod-name { font-size: 0.95rem; font-weight: 700; color: var(--text-heading); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.3rem; }
+    .prod-meta { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .prod-lot-tag { font-size: 0.72rem; font-weight: 600; padding: 0.15rem 0.6rem; border-radius: 20px; background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); white-space: nowrap; }
+    .prod-lot-tag.no-lot { background: var(--bg-section); color: var(--text-muted); border-color: var(--border); }
+    .prod-meta-text { font-size: 0.75rem; color: var(--text-muted); }
+    .prod-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+
+    /* Section header */
+    .section-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+    .section-hdr h3 { font-size: 0.95rem; font-weight: 700; margin: 0; }
+    .count-pill { font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.65rem; border-radius: 20px; background: var(--bg-section); color: var(--text-muted); }
+
+    @media (max-width: 700px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .prod-card { flex-wrap: wrap; }
+      .prod-actions { width: 100%; justify-content: flex-end; }
+    }
+  </style>
 </head>
 <body>
 
@@ -25,12 +94,32 @@
       <p class="sidebar-title">Documentos</p>
       <ul class="sidebar-nav">
         <li>
-          <a href="/admin/panel.html" >
+          <a href="/admin/panel.html">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
               <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
             </svg>
-            Gerenciar Docs
+            Gabinete Estadual
+          </a>
+        </li>
+        <li>
+          <a href="/admin/panel.html?cat=grande-conselho">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Grande Conselho
+          </a>
+        </li>
+        <li>
+          <a href="/admin/panel.html?cat=prestacao">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            Prestação de Contas
           </a>
         </li>
       </ul>
@@ -89,60 +178,89 @@
     </aside>
 
     <main class="admin-main">
-      <div class="d-flex justify-between align-center flex-wrap gap-2 mb-3">
-        <div class="admin-page-title" style="margin:0;">
-          <h1 style="font-size:1.6rem;margin:0;">Produtos da Loja</h1>
-          <p style="color:var(--text-muted);font-size:0.88rem;margin:0.25rem 0 0;">Gerencie inscrições de eventos e produtos</p>
+      <!-- Page title -->
+      <div class="admin-page-title" style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+        <div>
+          <h1>Produtos da Loja</h1>
+          <p>Gerencie inscrições de eventos e produtos</p>
         </div>
-        <a href="/admin/produto-form.html" class="btn btn-primary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
+        <a href="/admin/produto-form.html" class="btn btn-primary" style="flex-shrink:0;display:flex;align-items:center;gap:0.45rem;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Novo Produto
         </a>
       </div>
 
-      <div id="products-msg"></div>
-
-      <!-- Config PIX / WhatsApp -->
-      <div class="upload-card mb-3" style="margin-bottom:1.5rem;">
-        <h3 style="font-size:0.95rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="color:var(--gold)">
-            <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/>
-          </svg>
-          Configurações de Pagamento
-        </h3>
-        <form id="configForm">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-            <div class="form-group" style="margin:0;">
-              <label for="cfg-whatsapp">WhatsApp (com código do país)</label>
-              <input type="text" id="cfg-whatsapp" class="form-control" placeholder="5586999999999">
-            </div>
-            <div class="form-group" style="margin:0;">
-              <label for="cfg-pix">Chave PIX</label>
-              <input type="text" id="cfg-pix" class="form-control" placeholder="contato@demolaypiaui.org.br">
-            </div>
-            <div class="form-group" style="margin:0;">
-              <label for="cfg-pixtype">Tipo da Chave PIX</label>
-              <select id="cfg-pixtype" class="form-control">
-                <option value="email">E-mail</option>
-                <option value="cpf">CPF</option>
-                <option value="cnpj">CNPJ</option>
-                <option value="telefone">Telefone</option>
-                <option value="aleatoria">Chave Aleatória</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin:0;">
-              <label for="cfg-pixname">Nome do Favorecido PIX</label>
-              <input type="text" id="cfg-pixname" class="form-control" placeholder="Ordem DeMolay Piauí">
-            </div>
-          </div>
-          <div id="cfg-msg" style="margin-top:0.75rem;"></div>
-          <button type="submit" class="btn btn-outline btn-sm mt-2">Salvar Configurações</button>
-        </form>
+      <!-- Stats -->
+      <div class="stats-row" id="prod-stats" style="display:none;">
+        <div class="stat-card">
+          <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
+          <div class="stat-data"><strong id="stat-total">0</strong><span>Total de Produtos</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+          <div class="stat-data"><strong id="stat-active">0</strong><span>Ativos</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
+          <div class="stat-data"><strong id="stat-inactive">0</strong><span>Inativos</span></div>
+        </div>
       </div>
 
-      <!-- Lista de produtos -->
+      <!-- Config collapsible -->
+      <div class="config-card" id="config-card">
+        <div class="config-card-header" onclick="toggleConfig()">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+            Configurações de Pagamento
+          </h3>
+          <svg class="config-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="config-body">
+          <div class="config-body-inner">
+            <form id="configForm">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="form-group" style="margin:0;">
+                  <label for="cfg-whatsapp">WhatsApp (com código do país)</label>
+                  <input type="text" id="cfg-whatsapp" class="form-control" placeholder="5586999999999">
+                </div>
+                <div class="form-group" style="margin:0;">
+                  <label for="cfg-pix">Chave PIX</label>
+                  <input type="text" id="cfg-pix" class="form-control" placeholder="contato@demolaypiaui.org.br">
+                </div>
+                <div class="form-group" style="margin:0;">
+                  <label for="cfg-pixtype">Tipo da Chave PIX</label>
+                  <select id="cfg-pixtype" class="form-control">
+                    <option value="email">E-mail</option>
+                    <option value="cpf">CPF</option>
+                    <option value="cnpj">CNPJ</option>
+                    <option value="telefone">Telefone</option>
+                    <option value="aleatoria">Chave Aleatória</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin:0;">
+                  <label for="cfg-pixname">Nome do Favorecido PIX</label>
+                  <input type="text" id="cfg-pixname" class="form-control" placeholder="Ordem DeMolay Piauí">
+                </div>
+              </div>
+              <div id="cfg-msg" style="margin-top:0.75rem;"></div>
+              <button type="submit" class="btn btn-outline btn-sm" style="margin-top:1rem;">Salvar Configurações</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products list -->
+      <div class="section-hdr">
+        <h3>Produtos Cadastrados</h3>
+        <span class="count-pill" id="prod-count"></span>
+      </div>
+      <div id="products-msg"></div>
+      <div class="prod-toolbar">
+        <div class="prod-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="prodSearch" placeholder="Buscar produto pelo nome...">
+        </div>
+      </div>
       <div id="products-list">
         <div class="loading-wrap"><div class="spinner"></div></div>
       </div>
@@ -189,6 +307,55 @@
       setTimeout(() => msgEl.innerHTML = '', 3000);
     });
 
+    function toggleConfig() {
+      document.getElementById('config-card').classList.toggle('open');
+    }
+
+    function renderStats(products) {
+      const active = products.filter(p => p.active).length;
+      document.getElementById('stat-total').textContent = products.length;
+      document.getElementById('stat-active').textContent = active;
+      document.getElementById('stat-inactive').textContent = products.length - active;
+      document.getElementById('prod-stats').style.display = 'grid';
+    }
+
+    function buildProdCard(p, idx) {
+      const imgSrc = getProductImage(p);
+      const imgEl = imgSrc
+        ? `<img src="${imgSrc}" class="prod-img" alt="">`
+        : `<div class="prod-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" style="color:var(--text-muted)"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>`;
+
+      const activeLot = getActiveLot(p);
+      const lotTag = activeLot
+        ? `<span class="prod-lot-tag">${activeLot.name} · ${activeLot.price != null ? formatBRL(activeLot.price) : 'variável'}</span>`
+        : `<span class="prod-lot-tag no-lot">Sem lote ativo</span>`;
+
+      const lotsCount = (p.lots||[]).length;
+      const delay = Math.min(idx * 0.05, 0.4);
+
+      return `
+        <div class="prod-card ${p.active ? 'is-active' : 'is-inactive'}" data-id="${p.id}" style="--card-delay:${delay}s">
+          ${imgEl}
+          <div class="prod-info">
+            <div class="prod-name">${escapeHtml(p.name)}</div>
+            <div class="prod-meta">
+              ${lotTag}
+              <span class="prod-meta-text">${lotsCount} lote(s)${p.availableUntil ? ' · até ' + formatDate(p.availableUntil) : ''}</span>
+            </div>
+          </div>
+          <div class="prod-actions">
+            <label class="toggle-switch" title="${p.active ? 'Ativo — clique para desativar' : 'Inativo — clique para ativar'}">
+              <input type="checkbox" class="toggle-input" ${p.active ? 'checked' : ''} data-id="${p.id}">
+              <span class="toggle-slider"></span>
+            </label>
+            <a href="/admin/produto-form.html?id=${p.id}" class="btn btn-sm btn-outline">Editar</a>
+            <button class="btn btn-sm delete-btn" data-id="${p.id}" data-name="${escapeHtml(p.name)}" style="color:var(--danger);border-color:var(--danger);background:transparent;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+            </button>
+          </div>
+        </div>`;
+    }
+
     // Carrega produtos
     async function loadProducts() {
       const list = document.getElementById('products-list');
@@ -198,43 +365,13 @@
           list.innerHTML = `<div class="empty-state"><p>Nenhum produto cadastrado.</p><a href="/admin/produto-form.html" class="btn btn-primary mt-2">Criar primeiro produto</a></div>`;
           return;
         }
-        list.innerHTML = products.map(p => buildAdminProductItem(p)).join('');
+        renderStats(products);
+        document.getElementById('prod-count').textContent = `${products.length} produto(s)`;
+        list.innerHTML = products.map((p, idx) => buildProdCard(p, idx)).join('');
         attachEvents();
       } catch {
         list.innerHTML = '<p class="text-muted">Erro ao carregar produtos.</p>';
       }
-    }
-
-    function buildAdminProductItem(p) {
-      const imgSrc = getProductImage(p);
-      const imgEl = imgSrc
-        ? `<img src="${imgSrc}" class="admin-product-img" alt="">`
-        : `<div class="admin-product-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" style="color:var(--text-muted)"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>`;
-
-      const activeLot = getActiveLot(p);
-      const lotInfo = activeLot
-        ? `${activeLot.name} · ${activeLot.price != null ? formatBRL(activeLot.price) : 'variável'}`
-        : 'Sem lote ativo';
-
-      const lotsCount = (p.lots||[]).length;
-      const variantsCount = (p.variants||[]).length;
-
-      return `
-        <div class="admin-product-item" data-id="${p.id}">
-          ${imgEl}
-          <div class="admin-product-info">
-            <strong>${escapeHtml(p.name)}</strong>
-            <span>${lotInfo} · ${lotsCount} lote(s) · ${variantsCount} variante(s)${p.availableUntil ? ' · até ' + formatDate(p.availableUntil) : ''}</span>
-          </div>
-          <div class="admin-product-actions">
-            <label class="toggle-switch" title="${p.active ? 'Ativo — clique para desativar' : 'Inativo — clique para ativar'}">
-              <input type="checkbox" class="toggle-input" ${p.active ? 'checked' : ''} data-id="${p.id}">
-              <span class="toggle-slider"></span>
-            </label>
-            <a href="/admin/produto-form.html?id=${p.id}" class="btn btn-sm btn-outline">Editar</a>
-            <button class="btn btn-danger btn-sm delete-btn" data-id="${p.id}" data-name="${escapeHtml(p.name)}">Excluir</button>
-          </div>
-        </div>`;
     }
 
     function attachEvents() {
@@ -256,6 +393,14 @@
         });
       });
     }
+
+    document.getElementById('prodSearch').addEventListener('input', function() {
+      const q = this.value.toLowerCase();
+      document.querySelectorAll('.prod-card').forEach(card => {
+        const name = card.querySelector('.prod-name').textContent.toLowerCase();
+        card.style.display = name.includes(q) ? '' : 'none';
+      });
+    });
 
     function prodConfirm(message) {
       return new Promise(resolve => {
@@ -284,16 +429,18 @@
 
     function prodToast(msg, type) {
       let t = document.getElementById('_prod-toast');
-      if (!t) {
-        t = document.createElement('div');
-        t.id = '_prod-toast';
-        t.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9998;padding:0.75rem 1.25rem;border-radius:var(--radius);color:#fff;font-size:0.9rem;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,0.25);';
-        document.body.appendChild(t);
-      }
+      if (t) t.remove();
+      t = document.createElement('div');
+      t.id = '_prod-toast';
+      t.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9998;padding:0.75rem 1.25rem;border-radius:var(--radius);color:#fff;font-size:0.9rem;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,0.25);animation:toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;';
       t.textContent = msg;
       t.style.background = type === 'error' ? 'var(--danger)' : '#1b7a3e';
+      document.body.appendChild(t);
       clearTimeout(t._to);
-      t._to = setTimeout(() => t.remove(), 3500);
+      t._to = setTimeout(() => {
+        t.style.animation = 'toastOut 0.25s ease forwards';
+        setTimeout(() => t.remove(), 260);
+      }, 3500);
     }
 
     function formatDate(iso) {

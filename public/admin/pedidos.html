@@ -36,27 +36,92 @@
 
     /* Toolbar */
     .orders-toolbar {
-      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      display: flex; flex-direction: column; gap: 0.75rem;
       margin-bottom: 1.25rem; padding: 1rem 1.25rem;
       background: var(--bg-card); border: 1px solid var(--border);
       border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
     }
+    .toolbar-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+
     .search-box {
       display: flex; align-items: center; gap: 0.5rem;
-      background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius);
-      padding: 0 0.75rem; flex: 1; min-width: 200px;
-      transition: border-color 0.25s ease;
+      background: var(--bg); border: 1.5px solid var(--border); border-radius: 24px;
+      padding: 0 0.85rem; flex: 1; min-width: 200px;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
     }
-    .search-box:focus-within { border-color: var(--green); }
-    .search-box svg { width: 15px; height: 15px; color: var(--text-muted); flex-shrink: 0; }
+    .search-box:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px rgba(27,122,62,0.08); }
+    .search-box svg { width: 15px; height: 15px; color: var(--text-muted); flex-shrink: 0; transition: color 0.2s; }
+    .search-box:focus-within svg { color: var(--green); }
     .search-box input {
-      border: none; background: transparent; padding: 0.5rem 0;
+      border: none; background: transparent; padding: 0.55rem 0;
       font-family: var(--font-body); font-size: 0.88rem; color: var(--text-body);
       outline: none; width: 100%;
     }
     .search-box input::placeholder { color: var(--text-muted); }
-    .toolbar-sep { width: 1px; height: 28px; background: var(--border); }
-    .orders-toolbar .filter-btn { font-size: 0.78rem; padding: 0.38rem 0.85rem; }
+
+    /* Status filter tabs */
+    .status-tabs { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+    .status-tab {
+      display: flex; align-items: center; gap: 0.35rem;
+      padding: 0.38rem 0.85rem; border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: transparent; color: var(--text-body);
+      font-family: var(--font-body); font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .status-tab svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .status-tab .tab-count {
+      font-size: 0.68rem; font-weight: 700; min-width: 18px; text-align: center;
+      padding: 0.05rem 0.35rem; border-radius: 10px;
+      background: var(--bg-section); color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+    .status-tab:hover { border-color: var(--green); color: var(--green); }
+    .status-tab.active { background: var(--green); border-color: var(--green); color: #fff; }
+    .status-tab.active .tab-count { background: rgba(255,255,255,0.25); color: #fff; }
+    .status-tab.active.tab-pending  { background: #b8960e; border-color: #b8960e; }
+    .status-tab.active.tab-paid     { background: var(--green); border-color: var(--green); }
+    .status-tab.active.tab-cancelled { background: var(--danger); border-color: var(--danger); }
+
+    /* Product filter custom dropdown */
+    .product-dropdown { position: relative; }
+    .product-dropdown-btn {
+      display: flex; align-items: center; gap: 0.45rem;
+      padding: 0.4rem 0.75rem; border-radius: 20px;
+      border: 1.5px solid var(--border); background: var(--bg);
+      font-family: var(--font-body); font-size: 0.8rem; font-weight: 600;
+      color: var(--text-body); cursor: pointer;
+      transition: all 0.2s ease; white-space: nowrap;
+    }
+    .product-dropdown-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .product-dropdown-btn .chevron { transition: transform 0.25s ease; }
+    .product-dropdown.open .product-dropdown-btn .chevron { transform: rotate(180deg); }
+    .product-dropdown-btn:hover { border-color: var(--green); color: var(--green); }
+    .product-dropdown-btn.has-filter { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+    .product-dropdown-list {
+      position: absolute; top: calc(100% + 6px); right: 0;
+      min-width: 240px; max-height: 260px; overflow-y: auto;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-lg, 0 12px 32px rgba(0,0,0,0.15));
+      padding: 0.35rem; z-index: 50;
+      opacity: 0; transform: translateY(-6px) scale(0.97);
+      pointer-events: none; transition: all 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    .product-dropdown.open .product-dropdown-list {
+      opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+    }
+    .product-dropdown-item {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.5rem 0.75rem; border-radius: var(--radius);
+      font-size: 0.82rem; color: var(--text-body);
+      cursor: pointer; transition: background 0.15s;
+      border: none; background: none; width: 100%; text-align: left;
+      font-family: var(--font-body);
+    }
+    .product-dropdown-item:hover { background: var(--bg-section); }
+    .product-dropdown-item.active { background: var(--green-dim); color: var(--green); font-weight: 700; }
+    .product-dropdown-item svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--text-muted); }
 
     /* Order card redesenhado */
     .order-card {
@@ -225,16 +290,12 @@
     .order-delete-btn:hover { color: var(--danger) !important; transform: scale(1.18); }
     .order-delete-btn:active { transform: scale(0.9); }
 
-    /* ── Filter buttons ── */
-    .filter-btn { transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s; }
-    .filter-btn:active { transform: scale(0.88); }
-    .filter-btn.btn-anim { animation: btnPress 0.3s ease; }
-
     @media (max-width: 900px) {
       .stats-row { grid-template-columns: repeat(2, 1fr); }
       .order-header { flex-wrap: wrap; gap: 0.5rem; }
       .order-col-info { min-width: 100%; }
-      .toolbar-sep { display: none; }
+      .toolbar-row { flex-direction: column; align-items: stretch; }
+      .product-dropdown-list { right: auto; left: 0; }
     }
     @media (max-width: 500px) {
       .stats-row { grid-template-columns: 1fr 1fr; }
@@ -256,12 +317,32 @@
       <p class="sidebar-title">Documentos</p>
       <ul class="sidebar-nav">
         <li>
-          <a href="/admin/panel.html" >
+          <a href="/admin/panel.html">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
               <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
             </svg>
-            Gerenciar Docs
+            Gabinete Estadual
+          </a>
+        </li>
+        <li>
+          <a href="/admin/panel.html?cat=grande-conselho">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Grande Conselho
+          </a>
+        </li>
+        <li>
+          <a href="/admin/panel.html?cat=prestacao">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            Prestação de Contas
           </a>
         </li>
       </ul>
@@ -379,21 +460,40 @@
 
       <!-- Toolbar -->
       <div class="orders-toolbar">
-        <div class="search-box">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="searchInput" placeholder="Buscar por nome, e-mail ou n. do pedido...">
+        <div class="toolbar-row">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" placeholder="Buscar por nome, e-mail ou n. do pedido...">
+          </div>
+          <div class="product-dropdown" id="product-dropdown">
+            <button class="product-dropdown-btn" onclick="toggleProductDropdown()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+              <span id="product-dropdown-label">Todos os produtos</span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="product-dropdown-list" id="product-dropdown-list"></div>
+          </div>
         </div>
-        <div class="toolbar-sep"></div>
-        <div class="orders-filters" style="display:flex;gap:0.35rem;flex-wrap:wrap;">
-          <button class="filter-btn active" data-filter="all">Todos</button>
-          <button class="filter-btn gold" data-filter="pending">Aguardando</button>
-          <button class="filter-btn" data-filter="paid">Pagos</button>
-          <button class="filter-btn red" data-filter="cancelled">Cancelados</button>
+        <div class="toolbar-row">
+          <div class="status-tabs" id="status-tabs">
+            <button class="status-tab active" data-filter="all">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+              Todos <span class="tab-count" id="tab-count-all">0</span>
+            </button>
+            <button class="status-tab tab-pending" data-filter="pending">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              Aguardando <span class="tab-count" id="tab-count-pending">0</span>
+            </button>
+            <button class="status-tab tab-paid" data-filter="paid">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              Pagos <span class="tab-count" id="tab-count-paid">0</span>
+            </button>
+            <button class="status-tab tab-cancelled" data-filter="cancelled">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              Cancelados <span class="tab-count" id="tab-count-cancelled">0</span>
+            </button>
+          </div>
         </div>
-        <div class="toolbar-sep"></div>
-        <select id="productFilter" class="form-control" style="max-width:200px;padding:0.4rem 0.6rem;font-size:0.82rem;">
-          <option value="">Todos os produtos</option>
-        </select>
       </div>
 
       <p class="results-count" id="results-count"></p>
@@ -452,6 +552,7 @@
         allOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         populateProductFilter();
         renderStats();
+        updateTabCounts();
         renderOrders();
         document.getElementById('orders-stats').style.display = 'grid';
       } catch {
@@ -460,18 +561,46 @@
     }
 
     function populateProductFilter() {
-      const select = document.getElementById('productFilter');
+      const list = document.getElementById('product-dropdown-list');
       const seen = new Map();
       allOrders.forEach(o => (o.items || []).forEach(i => {
         if (!seen.has(i.productId)) seen.set(i.productId, i.productName);
       }));
+      let html = `<button class="product-dropdown-item ${!currentProduct ? 'active' : ''}" data-id="">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        Todos os produtos</button>`;
       seen.forEach((name, id) => {
-        const opt = document.createElement('option');
-        opt.value = id;
-        opt.textContent = name;
-        select.appendChild(opt);
+        html += `<button class="product-dropdown-item ${currentProduct===id ? 'active' : ''}" data-id="${id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          ${escapeHtml(name)}</button>`;
+      });
+      list.innerHTML = html;
+      list.querySelectorAll('.product-dropdown-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentProduct = btn.dataset.id;
+          const label = document.getElementById('product-dropdown-label');
+          const ddBtn = document.querySelector('.product-dropdown-btn');
+          label.textContent = btn.textContent.trim();
+          ddBtn.classList.toggle('has-filter', !!currentProduct);
+          list.querySelectorAll('.product-dropdown-item').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          closeProductDropdown();
+          renderStats();
+          updateTabCounts();
+          renderOrders();
+        });
       });
     }
+
+    function toggleProductDropdown() {
+      document.getElementById('product-dropdown').classList.toggle('open');
+    }
+    function closeProductDropdown() {
+      document.getElementById('product-dropdown').classList.remove('open');
+    }
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#product-dropdown')) closeProductDropdown();
+    });
 
     function getFiltered() {
       const q = searchQuery.toLowerCase();
@@ -605,6 +734,7 @@
         const idx = allOrders.findIndex(o => o.id === orderId);
         if (idx >= 0) allOrders[idx].status = status;
         renderStats();
+        updateTabCounts();
         renderOrders();
         showToast(status === 'paid' ? 'Pedido marcado como pago' : `Status atualizado: ${statusLabels[status]}`, 'success');
       }
@@ -620,26 +750,26 @@
       }, 250);
     });
 
-    // Filtro de status
-    document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
+    // Filtro de status tabs
+    document.querySelectorAll('.status-tab[data-filter]').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.status-tab[data-filter]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        btn.classList.remove('btn-anim');
-        void btn.offsetWidth;
-        btn.classList.add('btn-anim');
         currentFilter = btn.dataset.filter;
         renderStats();
         renderOrders();
       });
     });
 
-    // Filtro de produto
-    document.getElementById('productFilter').addEventListener('change', function() {
-      currentProduct = this.value;
-      renderStats();
-      renderOrders();
-    });
+    function updateTabCounts() {
+      const base = currentProduct
+        ? allOrders.filter(o => (o.items||[]).some(i => i.productId === currentProduct))
+        : allOrders;
+      document.getElementById('tab-count-all').textContent = base.length;
+      document.getElementById('tab-count-pending').textContent = base.filter(o => o.status === 'pending').length;
+      document.getElementById('tab-count-paid').textContent = base.filter(o => o.status === 'paid').length;
+      document.getElementById('tab-count-cancelled').textContent = base.filter(o => o.status === 'cancelled').length;
+    }
 
     // Modal de exclusao
     let pendingDeleteId = null;
@@ -675,6 +805,7 @@
         if (res.ok) {
           allOrders = allOrders.filter(o => o.id !== orderId);
           renderStats();
+          updateTabCounts();
           renderOrders();
           showToast('Pedido excluido com sucesso.', 'success');
         } else {
@@ -713,10 +844,13 @@
 
     // ── Exportar CSV ──
     function exportCSV() {
-      const paid = allOrders.filter(o =>
-        o.status === 'paid' &&
-        (!currentProduct || (o.items||[]).some(i => i.productId === currentProduct))
-      );
+      const paid = allOrders
+        .filter(o => o.status === 'paid' && (!currentProduct || (o.items||[]).some(i => i.productId === currentProduct)))
+        .sort((a, b) => {
+          const na = parseInt((a.orderNumber || '').replace('DMPI','')) || 0;
+          const nb = parseInt((b.orderNumber || '').replace('DMPI','')) || 0;
+          return na - nb;
+        });
       if (!paid.length) { showToast('Nenhum inscrito confirmado para exportar.', 'error'); return; }
 
       const headers = ['N. Pedido','Nome','E-mail','Telefone','Capítulo','Produto','Lote','Variante','Tam. Camisa','Qtd','Preço Unit.','Total Pedido','Data'];
@@ -748,7 +882,7 @@
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       const productSlug = currentProduct
-        ? (document.querySelector(`#productFilter option[value="${currentProduct}"]`)?.textContent || currentProduct).slice(0,30).replace(/\s+/g,'-').toLowerCase()
+        ? (document.getElementById('product-dropdown-label')?.textContent || currentProduct).slice(0,30).replace(/\s+/g,'-').toLowerCase()
         : 'todos';
       a.download = `inscritos-${productSlug}-${new Date().toISOString().slice(0,10)}.csv`;
       a.click();
@@ -757,10 +891,13 @@
 
     // ── Imprimir / PDF ──
     function printReport() {
-      const paid = allOrders.filter(o =>
-        o.status === 'paid' &&
-        (!currentProduct || (o.items||[]).some(i => i.productId === currentProduct))
-      );
+      const paid = allOrders
+        .filter(o => o.status === 'paid' && (!currentProduct || (o.items||[]).some(i => i.productId === currentProduct)))
+        .sort((a, b) => {
+          const na = parseInt((a.orderNumber || '').replace('DMPI','')) || 0;
+          const nb = parseInt((b.orderNumber || '').replace('DMPI','')) || 0;
+          return na - nb;
+        });
       if (!paid.length) { showToast('Nenhum inscrito confirmado para imprimir.', 'error'); return; }
 
       // Agrupa por produto
@@ -790,7 +927,7 @@
           @media print{body{padding:12px}h2{break-before:avoid}table{break-inside:auto}tr{break-inside:avoid}}
         </style></head><body>
         <h1>Inscritos Confirmados — DeMolay Piauí</h1>
-        <p class="subtitle">Gerado em ${now} · ${paid.length} inscrito(s) confirmado(s)${currentProduct ? ' · Produto: ' + (document.querySelector(`#productFilter option[value="${currentProduct}"]`)?.textContent || '') : ''}</p>`;
+        <p class="subtitle">Gerado em ${now} · ${paid.length} inscrito(s) confirmado(s)${currentProduct ? ' · Produto: ' + (document.getElementById('product-dropdown-label')?.textContent || '') : ''}</p>`;
 
       byProduct.forEach((entries, productName) => {
         html += `<h2>${productName} (${entries.length})</h2>
