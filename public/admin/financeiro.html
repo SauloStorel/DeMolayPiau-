@@ -106,6 +106,48 @@
     @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-5px)} 40%,80%{transform:translateX(5px)} }
     .shake { animation: shake 0.35s ease; }
 
+    /* ── Custom category dropdown ── */
+    .cat-dropdown { position: relative; }
+    .cat-dropdown-btn {
+      width: 100%; display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.6rem 0.85rem; border: 1.5px solid var(--border);
+      border-radius: var(--radius); background: var(--bg);
+      font-family: var(--font-body); font-size: 0.9rem; color: var(--text-muted);
+      cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; text-align: left;
+    }
+    .cat-dropdown-btn.has-value { color: var(--text-body); }
+    .cat-dropdown-btn:hover { border-color: var(--green); }
+    .cat-dropdown.open .cat-dropdown-btn { border-color: var(--green); box-shadow: 0 0 0 3px rgba(27,122,62,0.08); }
+    .cat-dropdown-btn > svg:first-child { width: 15px; height: 15px; flex-shrink: 0; transition: color 0.2s; }
+    .cat-dropdown.open .cat-dropdown-btn > svg:first-child { color: var(--green); }
+    .cat-dropdown-label { flex: 1; }
+    .cat-chevron { flex-shrink: 0; color: var(--text-muted); transition: transform 0.25s ease; width: 15px; height: 15px; }
+    .cat-dropdown.open .cat-chevron { transform: rotate(180deg); }
+    .cat-dropdown.invalid .cat-dropdown-btn { border-color: var(--danger) !important; box-shadow: 0 0 0 3px rgba(217,79,79,0.1) !important; }
+
+    .cat-list {
+      position: absolute; top: calc(100% + 5px); left: 0; right: 0; min-width: 220px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); box-shadow: 0 8px 28px rgba(0,0,0,0.13);
+      z-index: 300; overflow: hidden auto; max-height: 280px;
+      opacity: 0; transform: translateY(-8px) scale(0.98); pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      padding: 0.3rem;
+    }
+    .cat-dropdown.open .cat-list { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+    .cat-item {
+      display: flex; align-items: center; gap: 0.55rem;
+      padding: 0.42rem 0.7rem; cursor: pointer;
+      font-size: 0.87rem; color: var(--text-body);
+      border-radius: var(--radius); transition: background 0.13s;
+    }
+    .cat-item:hover { background: var(--bg-section); }
+    .cat-item.active { background: var(--green-dim); color: var(--green); font-weight: 600; }
+    .cat-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--border); transition: background 0.13s; }
+    .cat-item.active .cat-dot { background: var(--green); }
+    .cat-check { margin-left: auto; opacity: 0; color: var(--green); width: 13px; height: 13px; flex-shrink: 0; }
+    .cat-item.active .cat-check { opacity: 1; }
+
     /* Valor com prefixo R$ */
     .valor-wrap { display: flex; border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; background: var(--bg); }
     .valor-wrap:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px rgba(27,122,62,0.08); }
@@ -568,25 +610,19 @@
 
               <!-- Categoria full -->
               <div class="form-group" style="margin-bottom:1rem;">
-                <label class="form-label" for="inp-cat">
+                <label class="form-label">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
                   Categoria
                 </label>
-                <select class="form-select" id="inp-cat">
-                  <option value="">Selecione uma categoria…</option>
-                  <option value="Mensalidades">Mensalidades</option>
-                  <option value="Eventos">Eventos</option>
-                  <option value="Material/Escritório">Material/Escritório</option>
-                  <option value="Uniformes/Fardamento">Uniformes/Fardamento</option>
-                  <option value="Serviços">Serviços</option>
-                  <option value="Alimentação">Alimentação</option>
-                  <option value="Transporte">Transporte</option>
-                  <option value="Aluguel">Aluguel</option>
-                  <option value="Impostos/Taxas">Impostos/Taxas</option>
-                  <option value="Manutenção">Manutenção</option>
-                  <option value="Doações">Doações</option>
-                  <option value="Outros">Outros</option>
-                </select>
+                <input type="hidden" id="inp-cat">
+                <div class="cat-dropdown" id="cat-dd-form">
+                  <button type="button" class="cat-dropdown-btn" id="cat-btn-form" onclick="toggleCatDd('form')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                    <span class="cat-dropdown-label" id="cat-lbl-form">Selecione uma categoria…</span>
+                    <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="cat-list" id="cat-list-form"></div>
+                </div>
                 <span class="field-error" id="err-cat">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                   Selecione uma categoria.
@@ -703,22 +739,16 @@
             <input class="form-input" type="number" id="edit-valor" step="0.01" min="0.01" required>
           </div>
           <div class="form-group">
-            <label class="form-label" for="edit-cat">Categoria</label>
-            <select class="form-select" id="edit-cat" required>
-              <option value="">Selecione…</option>
-              <option value="Mensalidades">Mensalidades</option>
-              <option value="Eventos">Eventos</option>
-              <option value="Material/Escritório">Material/Escritório</option>
-              <option value="Uniformes/Fardamento">Uniformes/Fardamento</option>
-              <option value="Serviços">Serviços</option>
-              <option value="Alimentação">Alimentação</option>
-              <option value="Transporte">Transporte</option>
-              <option value="Aluguel">Aluguel</option>
-              <option value="Impostos/Taxas">Impostos/Taxas</option>
-              <option value="Manutenção">Manutenção</option>
-              <option value="Doações">Doações</option>
-              <option value="Outros">Outros</option>
-            </select>
+            <label class="form-label">Categoria</label>
+            <input type="hidden" id="edit-cat">
+            <div class="cat-dropdown" id="cat-dd-edit">
+              <button type="button" class="cat-dropdown-btn" id="cat-btn-edit" onclick="toggleCatDd('edit')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                <span class="cat-dropdown-label" id="cat-lbl-edit">Selecione uma categoria…</span>
+                <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="cat-list" id="cat-list-edit"></div>
+            </div>
           </div>
           <div class="form-group full">
             <label class="form-label" for="edit-desc">Descrição <span style="font-weight:400;text-transform:none;letter-spacing:0;">(opcional)</span></label>
@@ -867,7 +897,59 @@
     // Limpa erros ao digitar/mudar
     document.getElementById('inp-data').addEventListener('change', () => clearError('inp-data', null, 'err-data'));
     document.getElementById('inp-valor').addEventListener('input', () => clearError('inp-valor', 'wrap-valor', 'err-valor'));
-    document.getElementById('inp-cat').addEventListener('change', () => clearError('inp-cat', null, 'err-cat'));
+
+    // ── Custom category dropdown ────────────────────────────
+    const CATS = ['Mensalidades','Eventos','Material/Escritório','Uniformes/Fardamento',
+      'Serviços','Alimentação','Transporte','Aluguel','Impostos/Taxas','Manutenção','Doações','Outros'];
+
+    function buildCatList(ddId, inputId) {
+      const list = document.getElementById('cat-list-' + ddId);
+      list.innerHTML = CATS.map(c => `
+        <div class="cat-item" data-val="${c}" onclick="selectCat('${ddId}','${inputId}','${c}')">
+          <span class="cat-dot"></span>
+          ${c}
+          <svg class="cat-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>`).join('');
+    }
+    buildCatList('form', 'inp-cat');
+    buildCatList('edit', 'edit-cat');
+
+    function toggleCatDd(ddId) {
+      const dd = document.getElementById('cat-dd-' + ddId);
+      const isOpen = dd.classList.contains('open');
+      // Fecha todos
+      document.querySelectorAll('.cat-dropdown.open').forEach(d => d.classList.remove('open'));
+      if (!isOpen) dd.classList.add('open');
+    }
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.cat-dropdown')) {
+        document.querySelectorAll('.cat-dropdown.open').forEach(d => d.classList.remove('open'));
+      }
+    });
+
+    function selectCat(ddId, inputId, value) {
+      document.getElementById(inputId).value = value;
+      document.getElementById('cat-lbl-' + ddId).textContent = value;
+      document.getElementById('cat-btn-' + ddId).classList.add('has-value');
+      document.querySelectorAll(`#cat-list-${ddId} .cat-item`).forEach(el => {
+        el.classList.toggle('active', el.dataset.val === value);
+      });
+      document.getElementById('cat-dd-' + ddId).classList.remove('open');
+      if (inputId === 'inp-cat') {
+        document.getElementById('cat-dd-form').classList.remove('invalid');
+        document.getElementById('err-cat').classList.remove('show');
+      }
+    }
+
+    function setCatDd(ddId, inputId, value) {
+      document.getElementById(inputId).value = value || '';
+      const lbl = document.getElementById('cat-lbl-' + ddId);
+      lbl.textContent = value || 'Selecione uma categoria…';
+      document.getElementById('cat-btn-' + ddId).classList.toggle('has-value', !!value);
+      document.querySelectorAll(`#cat-list-${ddId} .cat-item`).forEach(el => {
+        el.classList.toggle('active', el.dataset.val === value);
+      });
+    }
 
     // ── Cadastrar form ──────────────────────────────────────
     document.getElementById('formCadastrar').addEventListener('submit', async e => {
@@ -882,8 +964,15 @@
       else clearError('inp-data', null, 'err-data');
       if (!valor || valor <= 0) { fieldError('inp-valor', 'wrap-valor', 'err-valor'); ok = false; }
       else clearError('inp-valor', 'wrap-valor', 'err-valor');
-      if (!cat) { fieldError('inp-cat', null, 'err-cat'); ok = false; }
-      else clearError('inp-cat', null, 'err-cat');
+      if (!cat) {
+        document.getElementById('cat-dd-form').classList.add('invalid', 'shake');
+        document.getElementById('err-cat').classList.add('show');
+        document.getElementById('cat-dd-form').addEventListener('animationend', () => document.getElementById('cat-dd-form').classList.remove('shake'), { once: true });
+        ok = false;
+      } else {
+        document.getElementById('cat-dd-form').classList.remove('invalid');
+        document.getElementById('err-cat').classList.remove('show');
+      }
       if (!ok) return;
 
       const btn = document.getElementById('btnRegistrar');
@@ -906,8 +995,8 @@
           toast('Lançamento registrado com sucesso!');
           document.getElementById('formCadastrar').reset();
           document.getElementById('inp-data').value = today;
+          setCatDd('form', 'inp-cat', '');
           // reset tipo toggle
-          selectedTipo = 'debito';
           selectedTipo = 'debito';
           document.querySelectorAll('#formCadastrar .tipo-btn').forEach(b => b.classList.remove('active'));
           document.querySelector('#formCadastrar .tipo-btn.debito').classList.add('active');
@@ -1085,7 +1174,7 @@
       document.getElementById('edit-id').value    = entry.id;
       document.getElementById('edit-data').value  = entry.data;
       document.getElementById('edit-valor').value = entry.valor;
-      document.getElementById('edit-cat').value   = entry.categoria;
+      setCatDd('edit', 'edit-cat', entry.categoria);
       document.getElementById('edit-desc').value  = entry.descricao || '';
       editTipo = entry.tipo;
       document.querySelectorAll('#edit-tipo-toggle .tipo-btn').forEach(b => {

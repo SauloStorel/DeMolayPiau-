@@ -51,6 +51,210 @@
     </div>
   </section>
 
+  <!-- ── Extrato Financeiro Público ─────────────── -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+
+      <div style="border-top:1px solid var(--border);padding-top:2.5rem;margin-bottom:2rem;">
+        <span style="display:inline-block;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--green);background:var(--green-dim);padding:0.25rem 0.75rem;border-radius:20px;margin-bottom:0.75rem;">Financeiro</span>
+        <h2 style="font-size:1.5rem;margin:0 0 0.4rem;">Extrato Financeiro</h2>
+        <p style="color:var(--text-muted);font-size:0.92rem;margin:0;">Movimentações financeiras da jurisdição organizadas por exercício fiscal (setembro a setembro).</p>
+      </div>
+
+      <!-- Seletor de exercício -->
+      <div id="fin-year-filters" class="year-filters" style="margin-bottom:1.5rem;"></div>
+
+      <!-- Stats do exercício -->
+      <div id="fin-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.75rem;"></div>
+
+      <!-- Meses -->
+      <div id="fin-months">
+        <div class="loading-wrap"><div class="spinner"></div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <style>
+    .fin-month-section {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); margin-bottom: 0.85rem;
+      box-shadow: var(--shadow-sm); overflow: hidden;
+    }
+    .fin-month-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 1.25rem; cursor: pointer; user-select: none;
+      transition: background 0.2s;
+    }
+    .fin-month-header:hover { background: rgba(0,0,0,0.02); }
+    .fin-month-left { display: flex; align-items: center; gap: 0.65rem; }
+    .fin-month-name { font-size: 0.95rem; font-weight: 700; color: var(--text-heading); }
+    .fin-month-count { font-size: 0.72rem; background: var(--bg-section); color: var(--text-muted); padding: 0.1rem 0.5rem; border-radius: 10px; font-weight: 600; }
+    .fin-month-total { font-size: 0.95rem; font-weight: 700; }
+    .fin-month-total.pos { color: var(--green); }
+    .fin-month-total.neg { color: #c0392b; }
+    .fin-month-total.zero { color: var(--text-muted); }
+    .fin-month-chevron { width: 18px; height: 18px; color: var(--text-muted); transition: transform 0.3s ease; flex-shrink: 0; }
+    .fin-month-section.open .fin-month-chevron { transform: rotate(180deg); }
+    .fin-month-body { max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(0.22,0.61,0.36,1); }
+    .fin-month-section.open .fin-month-body { max-height: 2000px; }
+    .fin-entry-table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    .fin-entry-table th { padding: 0.55rem 1.25rem; text-align: left; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); border-top: 1px solid var(--border); background: var(--bg-section); }
+    .fin-entry-table td { padding: 0.7rem 1.25rem; border-top: 1px solid var(--border); color: var(--text-body); vertical-align: middle; }
+    .fin-entry-table tr:hover td { background: rgba(0,0,0,0.015); }
+    .fin-type-pill { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+    .fin-type-pill.debito { background: rgba(192,57,43,0.1); color: #c0392b; }
+    .fin-type-pill.credito { background: var(--green-dim); color: var(--green); }
+    .fin-month-footer { padding: 0.6rem 1.25rem; border-top: 1px solid var(--border); background: var(--bg-section); display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem; font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+    .fin-stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.85rem; box-shadow: var(--shadow-sm); }
+    .fin-stat-icon { width: 40px; height: 40px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .fin-stat-icon svg { width: 17px; height: 17px; }
+    .fin-stat-icon.green { background: var(--green-dim); color: var(--green); }
+    .fin-stat-icon.red { background: rgba(192,57,43,0.1); color: #c0392b; }
+    .fin-stat-icon.blue { background: rgba(10,34,64,0.06); color: var(--navy); }
+    .fin-stat-value { font-size: 1.2rem; font-weight: 700; color: var(--text-heading); line-height: 1.1; }
+    .fin-stat-value.pos { color: var(--green); }
+    .fin-stat-value.neg { color: #c0392b; }
+    .fin-stat-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; margin-top: 0.1rem; }
+    .fin-empty { text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); font-size: 0.9rem; }
+    @media (max-width: 640px) {
+      #fin-stats { grid-template-columns: 1fr; }
+      .fin-entry-table th:nth-child(3), .fin-entry-table td:nth-child(3) { display: none; }
+    }
+  </style>
+
+  <script>
+  (function() {
+    const FISCAL_MONTHS = [8,9,10,11,0,1,2,3,4,5,6,7];
+    const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const fmt = v => 'R$ ' + v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.') ;
+    let allEntries = [], currentYear = null;
+
+    function getFY(dateStr) {
+      const d = new Date(dateStr + 'T12:00:00');
+      return d.getMonth() >= 8 ? d.getFullYear() : d.getFullYear() - 1;
+    }
+    function nowFY() {
+      const n = new Date(); return n.getMonth() >= 8 ? n.getFullYear() : n.getFullYear() - 1;
+    }
+
+    async function init() {
+      try {
+        const r = await fetch('/api/financeiro');
+        allEntries = r.ok ? await r.json() : [];
+      } catch { allEntries = []; }
+      const years = [...new Set(allEntries.map(e => getFY(e.data)))].sort((a,b) => b - a);
+      if (!years.length) {
+        document.getElementById('fin-months').innerHTML = '<div class="fin-empty">Nenhum lançamento publicado ainda.</div>';
+        return;
+      }
+      currentYear = years[0];
+      renderYearTabs(years);
+      renderYear();
+    }
+
+    function renderYearTabs(years) {
+      const el = document.getElementById('fin-year-filters');
+      el.innerHTML = years.map(y => `
+        <button class="year-btn ${y === currentYear ? 'active' : ''}" onclick="window._finSelectYear(${y})">${y}/${y+1}</button>
+      `).join('');
+    }
+
+    window._finSelectYear = function(y) {
+      currentYear = y;
+      document.querySelectorAll('#fin-year-filters .year-btn').forEach(b => {
+        b.classList.toggle('active', parseInt(b.textContent) === y);
+      });
+      renderYear();
+    };
+
+    function renderYear() {
+      const entries = allEntries.filter(e => getFY(e.data) === currentYear);
+      renderStats(entries);
+      renderMonths(entries);
+    }
+
+    function renderStats(entries) {
+      const cred = entries.filter(e => e.tipo === 'credito').reduce((s, e) => s + e.valor, 0);
+      const deb  = entries.filter(e => e.tipo === 'debito').reduce((s, e) => s + e.valor, 0);
+      const saldo = cred - deb;
+      document.getElementById('fin-stats').innerHTML = `
+        <div class="fin-stat-card">
+          <div class="fin-stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div><div class="fin-stat-value pos">${fmt(cred)}</div><div class="fin-stat-label">Total Entradas</div></div>
+        </div>
+        <div class="fin-stat-card">
+          <div class="fin-stat-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg></div>
+          <div><div class="fin-stat-value neg">${fmt(deb)}</div><div class="fin-stat-label">Total Saídas</div></div>
+        </div>
+        <div class="fin-stat-card">
+          <div class="fin-stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div><div class="fin-stat-value ${saldo >= 0 ? 'pos' : 'neg'}">${fmt(Math.abs(saldo))}</div><div class="fin-stat-label">Saldo ${saldo >= 0 ? 'Positivo' : 'Negativo'}</div></div>
+        </div>`;
+    }
+
+    function renderMonths(entries) {
+      const container = document.getElementById('fin-months');
+      let html = '';
+      let hasAny = false;
+
+      FISCAL_MONTHS.forEach((m, idx) => {
+        const year = m >= 8 ? currentYear : currentYear + 1;
+        const mes = entries.filter(e => {
+          const d = new Date(e.data + 'T12:00:00');
+          return d.getMonth() === m && d.getFullYear() === year;
+        }).sort((a, b) => a.data.localeCompare(b.data));
+
+        const cred = mes.filter(e => e.tipo === 'credito').reduce((s, e) => s + e.valor, 0);
+        const deb  = mes.filter(e => e.tipo === 'debito').reduce((s, e) => s + e.valor, 0);
+        const saldo = cred - deb;
+        const totalCls = saldo > 0 ? 'pos' : saldo < 0 ? 'neg' : 'zero';
+        const totalTxt = saldo === 0 ? 'R$ 0,00' : (saldo > 0 ? '+' : '-') + fmt(Math.abs(saldo));
+        const isOpen = mes.length > 0;
+        if (isOpen) hasAny = true;
+
+        const rows = mes.length ? mes.map(e => `
+          <tr>
+            <td>${new Date(e.data + 'T12:00:00').toLocaleDateString('pt-BR')}</td>
+            <td>${e.categoria}</td>
+            <td style="color:var(--text-muted);font-size:0.83rem;">${e.descricao || '—'}</td>
+            <td><span class="fin-type-pill ${e.tipo}">${e.tipo === 'credito' ? '↑ Crédito' : '↓ Débito'}</span></td>
+            <td style="font-weight:600;text-align:right;${e.tipo === 'credito' ? 'color:var(--green)' : 'color:#c0392b'}">${e.tipo === 'credito' ? '+' : '-'}${fmt(e.valor)}</td>
+          </tr>`).join('') : `<tr><td colspan="5" style="text-align:center;padding:1.25rem;color:var(--text-muted);font-style:italic;">Sem lançamentos neste mês.</td></tr>`;
+
+        html += `
+          <div class="fin-month-section${isOpen ? ' open' : ''}" style="--d:${idx * 0.04}s;">
+            <div class="fin-month-header" onclick="this.closest('.fin-month-section').classList.toggle('open')">
+              <div class="fin-month-left">
+                <span class="fin-month-name">${MONTH_NAMES[m]} ${year}</span>
+                ${mes.length ? `<span class="fin-month-count">${mes.length} lançamento${mes.length > 1 ? 's' : ''}</span>` : ''}
+              </div>
+              <div style="display:flex;align-items:center;gap:0.75rem;">
+                ${mes.length ? `<span class="fin-month-total ${totalCls}">${totalTxt}</span>` : ''}
+                <svg class="fin-month-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+            <div class="fin-month-body">
+              <table class="fin-entry-table">
+                <thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Tipo</th><th style="text-align:right;">Valor</th></tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+              ${mes.length ? `<div class="fin-month-footer">
+                <span>Entradas: <strong style="color:var(--green)">${fmt(cred)}</strong></span>
+                <span style="color:var(--text-muted)">·</span>
+                <span>Saídas: <strong style="color:#c0392b">${fmt(deb)}</strong></span>
+              </div>` : ''}
+            </div>
+          </div>`;
+      });
+
+      container.innerHTML = hasAny ? html : '<div class="fin-empty">Nenhum lançamento registrado neste exercício.</div>';
+    }
+
+    init();
+  })();
+  </script>
+
   <div id="footer-placeholder"></div>
 
   <script src="/js/nav.js"></script>

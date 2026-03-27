@@ -817,6 +817,11 @@ function safeParseJSON(str, fallback) {
 const financeiroFile = path.join(DATA_DIR, 'financeiro.json');
 if (!fs.existsSync(financeiroFile)) fs.writeFileSync(financeiroFile, '[]', 'utf8');
 
+// Rota pública — sem autenticação
+app.get('/api/financeiro', (req, res) => {
+  res.json(readJSON('financeiro.json'));
+});
+
 app.get('/api/admin/financeiro', requireAuth, (req, res) => {
   res.json(readJSON('financeiro.json'));
 });
