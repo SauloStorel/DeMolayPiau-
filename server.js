@@ -813,6 +813,61 @@ function safeParseJSON(str, fallback) {
   try { return JSON.parse(str); } catch { return fallback; }
 }
 
+// ── Financeiro ────────────────────────────────
+const financeiroFile = path.join(DATA_DIR, 'financeiro.json');
+if (!fs.existsSync(financeiroFile)) fs.writeFileSync(financeiroFile, '[]', 'utf8');
+
+app.get('/api/admin/financeiro', requireAuth, (req, res) => {
+  res.json(readJSON('financeiro.json'));
+});
+
+app.post('/api/admin/financeiro', requireAuth, (req, res) => {
+  const { data, categoria, descricao, valor, tipo } = req.body;
+  if (!data || !categoria || !valor || !tipo)
+    return res.status(400).json({ error: 'Campos obrigatórios: data, categoria, valor, tipo.' });
+  const valorNum = parseFloat(valor);
+  if (isNaN(valorNum) || valorNum <= 0)
+    return res.status(400).json({ error: 'Valor inválido.' });
+  if (!['debito', 'credito'].includes(tipo))
+    return res.status(400).json({ error: 'Tipo inválido.' });
+  const entries = readJSON('financeiro.json');
+  const entry = {
+    id: uuidv4(), data, categoria,
+    descricao: descricao || '', valor: valorNum, tipo,
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+  };
+  entries.push(entry);
+  writeJSON('financeiro.json', entries);
+  res.status(201).json(entry);
+});
+
+app.patch('/api/admin/financeiro/:id', requireAuth, (req, res) => {
+  const entries = readJSON('financeiro.json');
+  const idx = entries.findIndex(e => e.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Lançamento não encontrado.' });
+  const { data, categoria, descricao, valor, tipo } = req.body;
+  if (valor !== undefined) {
+    const v = parseFloat(valor);
+    if (isNaN(v) || v <= 0) return res.status(400).json({ error: 'Valor inválido.' });
+    entries[idx].valor = v;
+  }
+  if (data) entries[idx].data = data;
+  if (categoria) entries[idx].categoria = categoria;
+  if (descricao !== undefined) entries[idx].descricao = descricao;
+  if (tipo && ['debito', 'credito'].includes(tipo)) entries[idx].tipo = tipo;
+  entries[idx].updatedAt = new Date().toISOString();
+  writeJSON('financeiro.json', entries);
+  res.json(entries[idx]);
+});
+
+app.delete('/api/admin/financeiro/:id', requireAuth, (req, res) => {
+  const entries = readJSON('financeiro.json');
+  if (!entries.find(e => e.id === req.params.id))
+    return res.status(404).json({ error: 'Lançamento não encontrado.' });
+  writeJSON('financeiro.json', entries.filter(e => e.id !== req.params.id));
+  res.json({ success: true });
+});
+
 app.listen(PORT, () => {
   console.log(`✔ Servidor rodando em http://localhost:${PORT}`);
   console.log(`  Admin: http://localhost:${PORT}/admin`);

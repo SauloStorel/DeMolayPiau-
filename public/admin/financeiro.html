@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financeiro – Admin DeMolay Piauí</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <style>
+    /* ── Keyframes ── */
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes statIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(18px) scale(0.94); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to   { opacity: 0; transform: translateY(10px) scale(0.95); }
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Tabs ── */
+    .fin-tabs {
+      display: flex; gap: 0; border-bottom: 2px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+    .fin-tab {
+      padding: 0.65rem 1.4rem; font-family: var(--font-body); font-size: 0.88rem;
+      font-weight: 600; color: var(--text-muted); background: transparent;
+      border: none; border-bottom: 2px solid transparent; margin-bottom: -2px;
+      cursor: pointer; transition: color 0.2s, border-color 0.2s;
+    }
+    .fin-tab:hover { color: var(--text-heading); }
+    .fin-tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+    .fin-panel { display: none; }
+    .fin-panel.active { display: block; }
+
+    /* ── Form card ── */
+    .form-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 0; box-shadow: var(--shadow-sm);
+      max-width: 580px; overflow: hidden;
+    }
+    .form-card-header {
+      display: flex; align-items: center; gap: 0.9rem;
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(27,122,62,0.04) 0%, transparent 60%);
+    }
+    .form-card-icon {
+      width: 40px; height: 40px; border-radius: var(--radius);
+      background: var(--green-dim); color: var(--green);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .form-card:hover .form-card-icon { transform: scale(1.1) rotate(-6deg); }
+    .form-card-icon svg { width: 18px; height: 18px; }
+    .form-card-title { font-size: 0.95rem; font-weight: 700; color: var(--text-heading); }
+    .form-card-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .form-body { padding: 1.5rem; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-label {
+      font-size: 0.75rem; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      display: flex; align-items: center; gap: 0.3rem;
+    }
+    .form-input, .form-select, .form-textarea {
+      padding: 0.6rem 0.85rem; border: 1.5px solid var(--border);
+      border-radius: var(--radius); background: var(--bg);
+      font-family: var(--font-body); font-size: 0.9rem; color: var(--text-body);
+      transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--green); box-shadow: 0 0 0 3px rgba(27,122,62,0.08);
+    }
+    .form-textarea { resize: vertical; min-height: 70px; }
+
+    /* ── Validação customizada ── */
+    .field-error {
+      font-size: 0.76rem; color: var(--danger); font-weight: 500;
+      display: flex; align-items: center; gap: 0.3rem; margin-top: 0.3rem;
+      opacity: 0; max-height: 0; overflow: hidden;
+      transition: opacity 0.2s ease, max-height 0.25s ease;
+      pointer-events: none;
+    }
+    .field-error.show { opacity: 1; max-height: 40px; }
+    .field-error svg { flex-shrink: 0; }
+    .form-input.invalid, .form-select.invalid { border-color: var(--danger) !important; box-shadow: 0 0 0 3px rgba(217,79,79,0.1) !important; }
+    .valor-wrap.invalid { border-color: var(--danger) !important; box-shadow: 0 0 0 3px rgba(217,79,79,0.1) !important; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-5px)} 40%,80%{transform:translateX(5px)} }
+    .shake { animation: shake 0.35s ease; }
+
+    /* Valor com prefixo R$ */
+    .valor-wrap { display: flex; border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; background: var(--bg); }
+    .valor-wrap:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px rgba(27,122,62,0.08); }
+    .valor-prefix { padding: 0.6rem 0.75rem; background: var(--bg-section); border-right: 1.5px solid var(--border); font-size: 0.82rem; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; white-space: nowrap; }
+    .valor-input { border: none !important; box-shadow: none !important; flex: 1; background: transparent; padding: 0.6rem 0.85rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--text-body); outline: none; }
+
+    /* ── Tipo cards ── */
+    .tipo-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .tipo-card {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.85rem 1rem; border: 2px solid var(--border);
+      border-radius: var(--radius-lg); background: var(--bg);
+      cursor: pointer; font-family: var(--font-body);
+      transition: all 0.22s cubic-bezier(0.22,0.61,0.36,1);
+      text-align: left;
+    }
+    .tipo-card:hover { border-color: var(--text-muted); transform: translateY(-1px); }
+    .tipo-card-icon {
+      width: 36px; height: 36px; border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: all 0.22s ease;
+    }
+    .tipo-card-icon svg { width: 17px; height: 17px; }
+    .tipo-card .debito-icon { background: rgba(217,79,79,0.1); color: var(--danger); }
+    .tipo-card .credito-icon { background: var(--green-dim); color: var(--green); }
+    .tipo-card-label { font-size: 0.9rem; font-weight: 700; color: var(--text-heading); }
+    .tipo-card-sub { font-size: 0.74rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .tipo-card.active.debito {
+      border-color: var(--danger); background: rgba(217,79,79,0.05);
+      box-shadow: 0 0 0 3px rgba(217,79,79,0.1);
+    }
+    .tipo-card.active.debito .tipo-card-label { color: var(--danger); }
+    .tipo-card.active.credito {
+      border-color: var(--green); background: rgba(27,122,62,0.05);
+      box-shadow: 0 0 0 3px rgba(27,122,62,0.08);
+    }
+    .tipo-card.active.credito .tipo-card-label { color: var(--green); }
+
+    /* Botão submit full */
+    .btn-submit {
+      width: 100%; padding: 0.8rem 1rem; margin-top: 1.5rem;
+      background: var(--green); color: #fff; border: none;
+      border-radius: var(--radius-lg); font-family: var(--font-body);
+      font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(27,122,62,0.25);
+    }
+    .btn-submit:hover { background: #165f32; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(27,122,62,0.3); }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit.debito-active { background: var(--danger); box-shadow: 0 2px 8px rgba(217,79,79,0.25); }
+    .btn-submit.debito-active:hover { background: #b52d2d; box-shadow: 0 4px 16px rgba(217,79,79,0.3); }
+    .btn-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+    /* ── Tipo toggle (modal edição) ── */
+    .tipo-toggle { display: flex; gap: 0; border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .tipo-toggle .tipo-btn { flex: 1; padding: 0.55rem 1rem; background: transparent; border: none; font-family: var(--font-body); font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; color: var(--text-muted); }
+    .tipo-toggle .tipo-btn.active.debito { background: var(--danger); color: #fff; }
+    .tipo-toggle .tipo-btn.active.credito { background: var(--green); color: #fff; }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 1.1rem 1.25rem; box-shadow: var(--shadow-sm);
+      display: flex; align-items: center; gap: 1rem;
+      animation: statIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stat-card:nth-child(1) { animation-delay: 0.04s; }
+    .stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .stat-card:nth-child(3) { animation-delay: 0.16s; }
+    .stat-card:hover { border-color: var(--green); box-shadow: var(--shadow-card); }
+    .stat-icon {
+      width: 42px; height: 42px; border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .stat-card:hover .stat-icon { transform: scale(1.12) rotate(-6deg); }
+    .stat-icon svg { width: 18px; height: 18px; }
+    .stat-icon.green { background: var(--green-dim); color: var(--green); }
+    .stat-icon.red   { background: rgba(217,79,79,0.1); color: var(--danger); }
+    .stat-icon.neutral { background: rgba(10,34,64,0.06); color: var(--navy); }
+    .stat-data strong {
+      display: block; font-size: 1.25rem; font-weight: 700;
+      color: var(--text-heading); line-height: 1.1; letter-spacing: -0.02em;
+    }
+    .stat-data strong.pos { color: var(--green); }
+    .stat-data strong.neg { color: var(--danger); }
+    .stat-data span { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; }
+
+    /* ── Extrato toolbar ── */
+    .extrato-toolbar {
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+      margin-bottom: 1.25rem; padding: 0.85rem 1.1rem;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+    }
+    .extrato-toolbar select {
+      padding: 0.4rem 0.75rem; border: 1.5px solid var(--border); border-radius: var(--radius);
+      background: var(--bg); font-family: var(--font-body); font-size: 0.85rem;
+      color: var(--text-body); outline: none; transition: border-color 0.2s;
+    }
+    .extrato-toolbar select:focus { border-color: var(--green); }
+    .extrato-toolbar-right { margin-left: auto; display: flex; gap: 0.5rem; }
+
+    /* ── Month section ── */
+    .month-section {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); margin-bottom: 0.85rem;
+      box-shadow: var(--shadow-sm); overflow: hidden;
+      animation: cardIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+      animation-delay: var(--entry-delay, 0s);
+    }
+    .month-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.85rem 1.1rem; cursor: pointer;
+      transition: background 0.2s ease; user-select: none;
+    }
+    .month-header:hover { background: rgba(0,0,0,0.02); }
+    .month-header-left { display: flex; align-items: center; gap: 0.65rem; }
+    .month-name { font-size: 0.95rem; font-weight: 700; color: var(--text-heading); }
+    .month-count { font-size: 0.72rem; color: var(--text-muted); background: var(--bg-section); padding: 0.1rem 0.5rem; border-radius: 10px; font-weight: 600; }
+    .month-total { font-size: 1rem; font-weight: 700; }
+    .month-total.pos { color: var(--green); }
+    .month-total.neg { color: var(--danger); }
+    .month-total.zero { color: var(--text-muted); }
+    .month-chevron {
+      width: 20px; height: 20px; color: var(--text-muted);
+      transition: transform 0.3s ease; flex-shrink: 0;
+    }
+    .month-section.open .month-chevron { transform: rotate(180deg); }
+
+    .month-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    .month-section.open .month-body { max-height: 2000px; }
+
+    .month-body-inner {
+      border-top: 1px solid var(--border); padding: 0.5rem 0;
+    }
+
+    /* ── Entry table ── */
+    .entry-table { width: 100%; border-collapse: collapse; }
+    .entry-table th {
+      text-align: left; font-size: 0.7rem; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 0.4rem 1.1rem; border-bottom: 1px solid var(--border);
+    }
+    .entry-table td {
+      padding: 0.6rem 1.1rem; font-size: 0.84rem; color: var(--text-body);
+      border-bottom: 1px solid var(--border); vertical-align: middle;
+    }
+    .entry-row { animation: cardIn 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) both; animation-delay: var(--entry-delay, 0s); }
+    .entry-row:last-child td { border-bottom: none; }
+    .entry-row:hover td { background: rgba(0,0,0,0.015); }
+    .entry-date { font-family: monospace; font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
+    .entry-cat { font-weight: 600; color: var(--text-heading); }
+    .entry-desc { color: var(--text-muted); font-size: 0.8rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .entry-valor { font-weight: 700; white-space: nowrap; }
+    .entry-valor.credito { color: var(--green); }
+    .entry-valor.debito  { color: var(--danger); }
+
+    /* ── Tipo pill ── */
+    .tipo-pill {
+      display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 0.18rem 0.6rem;
+      border-radius: 20px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
+    }
+    .tipo-pill.credito { background: var(--green-dim); color: var(--green); }
+    .tipo-pill.debito  { background: rgba(217,79,79,0.1); color: var(--danger); }
+
+    /* ── Action buttons ── */
+    .action-btn {
+      width: 30px; height: 30px; border-radius: var(--radius); border: none;
+      background: transparent; cursor: pointer; display: inline-flex;
+      align-items: center; justify-content: center; color: var(--text-muted);
+      transition: color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .action-btn svg { width: 14px; height: 14px; }
+    .action-btn:hover.edit-btn { color: var(--green); background: var(--green-dim); transform: scale(1.12); }
+    .action-btn:hover.del-btn  { color: var(--danger); background: rgba(217,79,79,0.1); transform: scale(1.12); }
+    .action-btn:active { transform: scale(0.9); }
+
+    /* ── Empty month ── */
+    .month-empty {
+      padding: 0.75rem 1.1rem; font-size: 0.82rem; color: var(--text-muted); font-style: italic;
+    }
+
+    /* ── Annual total ── */
+    .annual-total {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem; margin-top: 0.5rem; display: flex;
+      align-items: center; justify-content: space-between; gap: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .annual-total-label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .annual-total-val { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; }
+    .annual-total-val.pos { color: var(--green); }
+    .annual-total-val.neg { color: var(--danger); }
+
+    /* ── Toast ── */
+    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+    .toast {
+      display: flex; align-items: center; gap: 0.6rem; min-width: 240px; max-width: 360px;
+      padding: 0.75rem 1rem; border-radius: var(--radius-lg);
+      background: var(--bg-card); border: 1px solid var(--border);
+      box-shadow: var(--shadow-card); font-size: 0.85rem; color: var(--text-body);
+      animation: toastIn 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    }
+    .toast.out { animation: toastOut 0.3s ease forwards; }
+    .toast svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.success svg { color: var(--green); }
+    .toast.error { border-left: 3px solid var(--danger); }
+    .toast.error svg { color: var(--danger); }
+
+    /* ── Modal ── */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      z-index: 1000; display: flex; align-items: center; justify-content: center;
+      padding: 1rem; opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+    .modal-box {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.5rem; width: 100%; max-width: 520px;
+      box-shadow: var(--shadow-card); transform: scale(0.94) translateY(8px);
+      transition: transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    .modal-backdrop.open .modal-box { transform: scale(1) translateY(0); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .modal-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--text-heading); margin: 0; }
+    .modal-close {
+      width: 32px; height: 32px; border: none; background: var(--bg-section);
+      border-radius: var(--radius); cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); transition: background 0.2s, color 0.2s;
+    }
+    .modal-close:hover { background: rgba(217,79,79,0.1); color: var(--danger); }
+    .modal-close svg { width: 16px; height: 16px; }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite; display: inline-block;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .entry-table th:nth-child(3), .entry-table td:nth-child(3) { display: none; }
+    }
+    @media (max-width: 460px) {
+      .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <a href="/" class="sidebar-brand">
+        <img src="/images/logo.png" alt="DeMolay Piauí">
+        <div>
+          <strong>DeMolay Piauí</strong>
+          <span>Painel Admin</span>
+        </div>
+      </a>
+
+      <p class="sidebar-title">Documentos</p>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="/admin/panel.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+            Gabinete Estadual
+          </a>
+        </li>
+        <li>
+          <a href="/admin/panel.html?cat=grande-conselho">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Grande Conselho
+          </a>
+        </li>
+        <li>
+          <a href="/admin/panel.html?cat=prestacao">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            Prestação de Contas
+          </a>
+        </li>
+      </ul>
+
+      <hr class="sidebar-divider">
+
+      <p class="sidebar-title">Financeiro</p>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="/admin/financeiro.html" class="active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="2" y="5" width="20" height="14" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+            Lançamentos
+          </a>
+        </li>
+      </ul>
+
+      <hr class="sidebar-divider">
+
+      <p class="sidebar-title">Loja</p>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="/admin/produtos.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+            Produtos
+          </a>
+        </li>
+        <li>
+          <a href="/admin/pedidos.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+            </svg>
+            Pedidos
+          </a>
+        </li>
+      </ul>
+
+      <hr class="sidebar-divider">
+
+      <ul class="sidebar-nav">
+        <li>
+          <a href="/" style="font-size:0.82rem;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            Ver Site
+          </a>
+        </li>
+        <li>
+          <a href="#" id="logoutBtn" style="color:var(--danger)!important;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Sair
+          </a>
+        </li>
+      </ul>
+      <div class="sidebar-credit">
+        Site feito por <a href="https://storel.space/" target="_blank" rel="noopener">Saulo Storel</a>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-page-title">
+        <div>
+          <h1>Financeiro</h1>
+          <p>Gerencie os lançamentos financeiros da Ordem DeMolay Piauí</p>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="fin-tabs">
+        <button class="fin-tab active" data-tab="cadastrar">Cadastrar Lançamento</button>
+        <button class="fin-tab" data-tab="extrato">Extrato / Relatório</button>
+      </div>
+
+      <!-- ── Tab: Cadastrar ── -->
+      <div class="fin-panel active" id="panel-cadastrar">
+        <div class="form-card">
+          <!-- Header do card -->
+          <div class="form-card-header">
+            <div class="form-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div>
+              <div class="form-card-title">Novo Lançamento</div>
+              <div class="form-card-subtitle">Registre uma entrada ou saída financeira</div>
+            </div>
+          </div>
+
+          <div class="form-body">
+            <form id="formCadastrar" autocomplete="off" novalidate>
+
+              <!-- Tipo de lançamento -->
+              <div class="form-group" style="margin-bottom:1.25rem;">
+                <label class="form-label">Tipo de Lançamento</label>
+                <div class="tipo-cards">
+                  <button type="button" class="tipo-card debito tipo-btn active" data-tipo="debito">
+                    <div class="tipo-card-icon debito-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                    </div>
+                    <div>
+                      <div class="tipo-card-label">Débito</div>
+                      <div class="tipo-card-sub">Saída da conta</div>
+                    </div>
+                  </button>
+                  <button type="button" class="tipo-card credito tipo-btn" data-tipo="credito">
+                    <div class="tipo-card-icon credito-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                    </div>
+                    <div>
+                      <div class="tipo-card-label">Crédito</div>
+                      <div class="tipo-card-sub">Entrada na conta</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Data + Valor -->
+              <div class="form-grid" style="margin-bottom:1rem;">
+                <div class="form-group">
+                  <label class="form-label" for="inp-data">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Data
+                  </label>
+                  <input class="form-input" type="date" id="inp-data">
+                  <span class="field-error" id="err-data">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    Informe a data do lançamento.
+                  </span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="inp-valor">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    Valor
+                  </label>
+                  <div class="valor-wrap" id="wrap-valor">
+                    <span class="valor-prefix">R$</span>
+                    <input class="valor-input" type="number" id="inp-valor" step="0.01" min="0.01" placeholder="0,00">
+                  </div>
+                  <span class="field-error" id="err-valor">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    Informe um valor maior que zero.
+                  </span>
+                </div>
+              </div>
+
+              <!-- Categoria full -->
+              <div class="form-group" style="margin-bottom:1rem;">
+                <label class="form-label" for="inp-cat">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                  Categoria
+                </label>
+                <select class="form-select" id="inp-cat">
+                  <option value="">Selecione uma categoria…</option>
+                  <option value="Mensalidades">Mensalidades</option>
+                  <option value="Eventos">Eventos</option>
+                  <option value="Material/Escritório">Material/Escritório</option>
+                  <option value="Uniformes/Fardamento">Uniformes/Fardamento</option>
+                  <option value="Serviços">Serviços</option>
+                  <option value="Alimentação">Alimentação</option>
+                  <option value="Transporte">Transporte</option>
+                  <option value="Aluguel">Aluguel</option>
+                  <option value="Impostos/Taxas">Impostos/Taxas</option>
+                  <option value="Manutenção">Manutenção</option>
+                  <option value="Doações">Doações</option>
+                  <option value="Outros">Outros</option>
+                </select>
+                <span class="field-error" id="err-cat">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  Selecione uma categoria.
+                </span>
+              </div>
+
+              <!-- Descrição -->
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="inp-desc">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                  Descrição <span style="font-weight:400;text-transform:none;letter-spacing:0;opacity:.7;">(opcional)</span>
+                </label>
+                <textarea class="form-textarea" id="inp-desc" rows="2" placeholder="Detalhe o lançamento…"></textarea>
+              </div>
+
+              <button type="submit" class="btn-submit" id="btnRegistrar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+                Registrar Lançamento
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Tab: Extrato ── -->
+      <div class="fin-panel" id="panel-extrato">
+
+        <!-- Stats -->
+        <div class="stats-row" id="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            <div class="stat-data">
+              <strong id="stat-entradas" class="pos">R$ 0,00</strong>
+              <span>Total Entradas</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon red">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+            </div>
+            <div class="stat-data">
+              <strong id="stat-saidas" class="neg">R$ 0,00</strong>
+              <span>Total Saídas</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon neutral">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+            <div class="stat-data">
+              <strong id="stat-saldo">R$ 0,00</strong>
+              <span>Saldo</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="extrato-toolbar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16" style="color:var(--text-muted)"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <label style="font-size:0.82rem;font-weight:600;color:var(--text-muted);">Exercício:</label>
+          <select id="sel-exercicio" style="min-width:160px;"></select>
+          <div class="extrato-toolbar-right">
+            <button class="btn btn-outline" style="font-size:0.82rem;display:flex;align-items:center;gap:0.4rem;" onclick="exportCSV()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar CSV
+            </button>
+            <button class="btn btn-outline" style="font-size:0.82rem;display:flex;align-items:center;gap:0.4rem;" onclick="printReport()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Imprimir / PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Month list -->
+        <div id="extrato-list"></div>
+
+        <!-- Annual total -->
+        <div class="annual-total" id="annual-total" style="display:none;">
+          <span class="annual-total-label">Saldo do Exercício</span>
+          <span class="annual-total-val" id="annual-total-val">R$ 0,00</span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ── Modal de Edição ── -->
+  <div class="modal-backdrop" id="editModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Editar Lançamento</h2>
+        <button class="modal-close" id="modalClose">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="formEdit" autocomplete="off">
+        <input type="hidden" id="edit-id">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="edit-data">Data</label>
+            <input class="form-input" type="date" id="edit-data" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tipo</label>
+            <div class="tipo-toggle" id="edit-tipo-toggle">
+              <button type="button" class="tipo-btn debito active" data-tipo="debito">Débito</button>
+              <button type="button" class="tipo-btn credito" data-tipo="credito">Crédito</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-valor">Valor (R$)</label>
+            <input class="form-input" type="number" id="edit-valor" step="0.01" min="0.01" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-cat">Categoria</label>
+            <select class="form-select" id="edit-cat" required>
+              <option value="">Selecione…</option>
+              <option value="Mensalidades">Mensalidades</option>
+              <option value="Eventos">Eventos</option>
+              <option value="Material/Escritório">Material/Escritório</option>
+              <option value="Uniformes/Fardamento">Uniformes/Fardamento</option>
+              <option value="Serviços">Serviços</option>
+              <option value="Alimentação">Alimentação</option>
+              <option value="Transporte">Transporte</option>
+              <option value="Aluguel">Aluguel</option>
+              <option value="Impostos/Taxas">Impostos/Taxas</option>
+              <option value="Manutenção">Manutenção</option>
+              <option value="Doações">Doações</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="edit-desc">Descrição <span style="font-weight:400;text-transform:none;letter-spacing:0;">(opcional)</span></label>
+            <textarea class="form-textarea" id="edit-desc" rows="2"></textarea>
+          </div>
+        </div>
+        <div style="margin-top:1.25rem;display:flex;gap:0.75rem;justify-content:flex-end;">
+          <button type="button" class="btn btn-outline" id="btnCancelEdit">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveEdit" style="display:flex;align-items:center;gap:0.5rem;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Salvar Alterações
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Toast container ── -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // ── State ──────────────────────────────────────────────
+    let allEntries = [];
+    let currentFiscalYear = null;
+
+    // ── Auth check ─────────────────────────────────────────
+    (async () => {
+      try {
+        const r = await fetch('/api/auth/check');
+        if (!r.ok) location.href = '/admin/index.html';
+      } catch { location.href = '/admin/index.html'; }
+    })();
+
+    // ── Logout ─────────────────────────────────────────────
+    document.getElementById('logoutBtn').addEventListener('click', async e => {
+      e.preventDefault();
+      await fetch('/api/auth/logout', { method: 'POST' });
+      location.href = '/admin/index.html';
+    });
+
+    // ── Toast ──────────────────────────────────────────────
+    function toast(msg, type = 'success') {
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      const icon = type === 'success'
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+      el.innerHTML = icon + `<span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(el);
+      setTimeout(() => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove()); }, 3200);
+    }
+
+    // ── Format helpers ─────────────────────────────────────
+    function fmtBRL(v) {
+      return 'R$ ' + Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function fmtDate(d) {
+      const [y, m, day] = d.split('-');
+      return `${day}/${m}/${y}`;
+    }
+
+    // ── Fiscal year helpers ────────────────────────────────
+    // Exercício: Set(year) → Ago(year+1)
+    // getFiscalYear: if month >= 8 (Sep=8 in 0-based) → year, else year-1
+    function getFiscalYear(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      const month = d.getMonth(); // 0-based: 8 = setembro
+      const year  = d.getFullYear();
+      return month >= 8 ? year : year - 1;
+    }
+
+    function fiscalYearLabel(fy) {
+      return `Exercício ${fy}/${fy + 1}`;
+    }
+
+    // Months in fiscal order: Sep=8, Oct=9, Nov=10, Dec=11, Jan=0, Feb=1, Mar=2, Apr=3, May=4, Jun=5, Jul=6, Aug=7
+    const FISCAL_MONTHS = [8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7];
+    const MONTH_NAMES   = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+    function monthYearForFiscal(fy, monthIdx) {
+      // monthIdx 0..11 in fiscal order
+      const m = FISCAL_MONTHS[monthIdx];
+      const y = m >= 8 ? fy : fy + 1;
+      return { month: m, year: y };
+    }
+
+    // ── Tabs ───────────────────────────────────────────────
+    document.querySelectorAll('.fin-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.fin-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.fin-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+        if (btn.dataset.tab === 'extrato') renderExtrato();
+      });
+    });
+
+    // ── Tipo toggle (cadastrar) ────────────────────────────
+    let selectedTipo = 'debito';
+    const btnSubmit = document.getElementById('btnRegistrar');
+    document.querySelectorAll('#formCadastrar .tipo-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedTipo = btn.dataset.tipo;
+        document.querySelectorAll('#formCadastrar .tipo-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (selectedTipo === 'debito') {
+          btnSubmit.classList.add('debito-active');
+          btnSubmit.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg> Registrar Débito`;
+        } else {
+          btnSubmit.classList.remove('debito-active');
+          btnSubmit.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg> Registrar Crédito`;
+        }
+      });
+    });
+
+    // ── Default date = today ────────────────────────────────
+    const today = new Date().toISOString().slice(0, 10);
+    document.getElementById('inp-data').value = today;
+    // Botão começa no estado débito
+    btnSubmit.classList.add('debito-active');
+    btnSubmit.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg> Registrar Débito`;
+
+    // ── Load entries ───────────────────────────────────────
+    async function loadEntries() {
+      const r = await fetch('/api/admin/financeiro');
+      allEntries = r.ok ? await r.json() : [];
+    }
+
+    // ── Validação customizada ───────────────────────────────
+    function fieldError(id, wrapId, errId, msg) {
+      const el = document.getElementById(id);
+      const wrap = wrapId ? document.getElementById(wrapId) : el;
+      const err = document.getElementById(errId);
+      wrap.classList.add('invalid');
+      if (msg) err.querySelector('svg + *') ? (err.lastChild.textContent = ' ' + msg) : null;
+      err.classList.add('show');
+      wrap.classList.add('shake');
+      wrap.addEventListener('animationend', () => wrap.classList.remove('shake'), { once: true });
+    }
+    function clearError(id, wrapId, errId) {
+      const el = document.getElementById(id);
+      const wrap = wrapId ? document.getElementById(wrapId) : el;
+      wrap.classList.remove('invalid');
+      document.getElementById(errId).classList.remove('show');
+    }
+    // Limpa erros ao digitar/mudar
+    document.getElementById('inp-data').addEventListener('change', () => clearError('inp-data', null, 'err-data'));
+    document.getElementById('inp-valor').addEventListener('input', () => clearError('inp-valor', 'wrap-valor', 'err-valor'));
+    document.getElementById('inp-cat').addEventListener('change', () => clearError('inp-cat', null, 'err-cat'));
+
+    // ── Cadastrar form ──────────────────────────────────────
+    document.getElementById('formCadastrar').addEventListener('submit', async e => {
+      e.preventDefault();
+
+      // Validação
+      let ok = true;
+      const data = document.getElementById('inp-data').value;
+      const valor = parseFloat(document.getElementById('inp-valor').value);
+      const cat = document.getElementById('inp-cat').value;
+      if (!data) { fieldError('inp-data', null, 'err-data'); ok = false; }
+      else clearError('inp-data', null, 'err-data');
+      if (!valor || valor <= 0) { fieldError('inp-valor', 'wrap-valor', 'err-valor'); ok = false; }
+      else clearError('inp-valor', 'wrap-valor', 'err-valor');
+      if (!cat) { fieldError('inp-cat', null, 'err-cat'); ok = false; }
+      else clearError('inp-cat', null, 'err-cat');
+      if (!ok) return;
+
+      const btn = document.getElementById('btnRegistrar');
+      const orig = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Registrando…';
+
+      const body = {
+        data,
+        categoria: cat,
+        descricao: document.getElementById('inp-desc').value.trim(),
+        valor,
+        tipo: selectedTipo,
+      };
+      try {
+        const r = await fetch('/api/admin/financeiro', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+        });
+        if (r.ok) {
+          toast('Lançamento registrado com sucesso!');
+          document.getElementById('formCadastrar').reset();
+          document.getElementById('inp-data').value = today;
+          // reset tipo toggle
+          selectedTipo = 'debito';
+          selectedTipo = 'debito';
+          document.querySelectorAll('#formCadastrar .tipo-btn').forEach(b => b.classList.remove('active'));
+          document.querySelector('#formCadastrar .tipo-btn.debito').classList.add('active');
+          btnSubmit.classList.add('debito-active');
+          btnSubmit.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg> Registrar Débito`;
+          await loadEntries();
+        } else {
+          const err = await r.json();
+          toast(err.error || 'Erro ao registrar.', 'error');
+        }
+      } catch { toast('Erro de rede.', 'error'); }
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    });
+
+    // ── Extrato ─────────────────────────────────────────────
+    function buildFiscalYearOptions() {
+      const years = new Set();
+      allEntries.forEach(e => years.add(getFiscalYear(e.data)));
+      // always include current fiscal year
+      years.add(getFiscalYear(today));
+      const sorted = [...years].sort((a, b) => b - a);
+      const sel = document.getElementById('sel-exercicio');
+      const prev = sel.value;
+      sel.innerHTML = sorted.map(y => `<option value="${y}">${fiscalYearLabel(y)}</option>`).join('');
+      if (prev && sorted.includes(parseInt(prev))) sel.value = prev;
+      else sel.value = sorted[0] || getFiscalYear(today);
+      currentFiscalYear = parseInt(sel.value);
+    }
+
+    document.getElementById('sel-exercicio').addEventListener('change', function() {
+      currentFiscalYear = parseInt(this.value);
+      renderExtrato();
+    });
+
+    function renderExtrato() {
+      buildFiscalYearOptions();
+      const fy = currentFiscalYear || getFiscalYear(today);
+
+      // filter entries for this fiscal year
+      const fyEntries = allEntries.filter(e => getFiscalYear(e.data) === fy);
+
+      // stats
+      const entradas = fyEntries.filter(e => e.tipo === 'credito').reduce((s, e) => s + e.valor, 0);
+      const saidas   = fyEntries.filter(e => e.tipo === 'debito').reduce((s, e) => s + e.valor, 0);
+      const saldo    = entradas - saidas;
+
+      document.getElementById('stat-entradas').textContent = fmtBRL(entradas);
+      document.getElementById('stat-saidas').textContent   = fmtBRL(saidas);
+      const saldoEl = document.getElementById('stat-saldo');
+      saldoEl.textContent = (saldo < 0 ? '- ' : '') + fmtBRL(saldo);
+      saldoEl.className = saldo >= 0 ? 'pos' : 'neg';
+      const saldoIcon = saldoEl.closest('.stat-card').querySelector('.stat-icon');
+      saldoIcon.className = 'stat-icon ' + (saldo >= 0 ? 'green' : 'red');
+
+      // annual total
+      const annualEl  = document.getElementById('annual-total');
+      const annualVal = document.getElementById('annual-total-val');
+      annualEl.style.display = '';
+      annualVal.textContent = (saldo < 0 ? '- ' : '') + fmtBRL(saldo);
+      annualVal.className   = 'annual-total-val ' + (saldo >= 0 ? 'pos' : 'neg');
+
+      // month sections
+      const list = document.getElementById('extrato-list');
+      list.innerHTML = '';
+
+      FISCAL_MONTHS.forEach((m, fiscalIdx) => {
+        const { month, year } = monthYearForFiscal(fy, fiscalIdx);
+        const monthEntries = fyEntries.filter(e => {
+          const d = new Date(e.data + 'T00:00:00');
+          return d.getMonth() === month && d.getFullYear() === year;
+        }).sort((a, b) => a.data.localeCompare(b.data));
+
+        const totalMes = monthEntries.reduce((s, e) => s + (e.tipo === 'credito' ? e.valor : -e.valor), 0);
+        const hasEntries = monthEntries.length > 0;
+
+        const section = document.createElement('div');
+        section.className = 'month-section' + (hasEntries ? ' open' : '');
+        section.style.setProperty('--entry-delay', (fiscalIdx * 0.04) + 's');
+
+        const totalClass = totalMes > 0 ? 'pos' : totalMes < 0 ? 'neg' : 'zero';
+        const totalSign  = totalMes < 0 ? '- ' : totalMes > 0 ? '+ ' : '';
+
+        section.innerHTML = `
+          <div class="month-header">
+            <div class="month-header-left">
+              <span class="month-name">${MONTH_NAMES[month]} ${year}</span>
+              <span class="month-count">${monthEntries.length} lançamento${monthEntries.length !== 1 ? 's' : ''}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="month-total ${totalClass}">${hasEntries ? totalSign + fmtBRL(totalMes) : '—'}</span>
+              <svg class="month-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div class="month-body">
+            <div class="month-body-inner">
+              ${hasEntries ? `
+              <table class="entry-table">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Categoria</th>
+                    <th>Descrição</th>
+                    <th>Tipo</th>
+                    <th style="text-align:right;">Valor</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${monthEntries.map((e, i) => `
+                  <tr class="entry-row" style="--entry-delay:${i * 0.04}s;">
+                    <td><span class="entry-date">${fmtDate(e.data)}</span></td>
+                    <td><span class="entry-cat">${escHtml(e.categoria)}</span></td>
+                    <td><span class="entry-desc" title="${escHtml(e.descricao)}">${escHtml(e.descricao) || '<em style="color:var(--text-muted);font-style:italic;">—</em>'}</span></td>
+                    <td><span class="tipo-pill ${e.tipo}">${e.tipo === 'credito' ? 'Crédito' : 'Débito'}</span></td>
+                    <td style="text-align:right;"><span class="entry-valor ${e.tipo}">${e.tipo === 'debito' ? '- ' : '+ '}${fmtBRL(e.valor)}</span></td>
+                    <td style="white-space:nowrap;">
+                      <button class="action-btn edit-btn" title="Editar" onclick="openEditModal('${e.id}')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                      </button>
+                      <button class="action-btn del-btn" title="Excluir" onclick="deleteEntry('${e.id}')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                      </button>
+                    </td>
+                  </tr>`).join('')}
+                </tbody>
+              </table>` : '<p class="month-empty">Sem lançamentos neste mês.</p>'}
+            </div>
+          </div>`;
+
+        // toggle collapse
+        section.querySelector('.month-header').addEventListener('click', () => {
+          section.classList.toggle('open');
+        });
+
+        list.appendChild(section);
+      });
+    }
+
+    // ── Escape HTML ────────────────────────────────────────
+    function escHtml(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Delete ─────────────────────────────────────────────
+    async function deleteEntry(id) {
+      if (!confirm('Deseja realmente excluir este lançamento?')) return;
+      try {
+        const r = await fetch(`/api/admin/financeiro/${id}`, { method: 'DELETE' });
+        if (r.ok) {
+          toast('Lançamento excluído.');
+          await loadEntries();
+          renderExtrato();
+        } else {
+          const err = await r.json();
+          toast(err.error || 'Erro ao excluir.', 'error');
+        }
+      } catch { toast('Erro de rede.', 'error'); }
+    }
+
+    // ── Edit modal ─────────────────────────────────────────
+    let editTipo = 'debito';
+
+    document.querySelectorAll('#edit-tipo-toggle .tipo-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        editTipo = btn.dataset.tipo;
+        document.querySelectorAll('#edit-tipo-toggle .tipo-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    function openEditModal(id) {
+      const entry = allEntries.find(e => e.id === id);
+      if (!entry) return;
+      document.getElementById('edit-id').value    = entry.id;
+      document.getElementById('edit-data').value  = entry.data;
+      document.getElementById('edit-valor').value = entry.valor;
+      document.getElementById('edit-cat').value   = entry.categoria;
+      document.getElementById('edit-desc').value  = entry.descricao || '';
+      editTipo = entry.tipo;
+      document.querySelectorAll('#edit-tipo-toggle .tipo-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.tipo === editTipo);
+      });
+      document.getElementById('editModal').classList.add('open');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('open');
+    }
+
+    document.getElementById('modalClose').addEventListener('click', closeEditModal);
+    document.getElementById('btnCancelEdit').addEventListener('click', closeEditModal);
+    document.getElementById('editModal').addEventListener('click', e => {
+      if (e.target === document.getElementById('editModal')) closeEditModal();
+    });
+
+    document.getElementById('formEdit').addEventListener('submit', async e => {
+      e.preventDefault();
+      const id  = document.getElementById('edit-id').value;
+      const btn = document.getElementById('btnSaveEdit');
+      const orig = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Salvando…';
+
+      const body = {
+        data:      document.getElementById('edit-data').value,
+        categoria: document.getElementById('edit-cat').value,
+        descricao: document.getElementById('edit-desc').value.trim(),
+        valor:     document.getElementById('edit-valor').value,
+        tipo:      editTipo,
+      };
+      try {
+        const r = await fetch(`/api/admin/financeiro/${id}`, {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+        });
+        if (r.ok) {
+          toast('Lançamento atualizado.');
+          closeEditModal();
+          await loadEntries();
+          renderExtrato();
+        } else {
+          const err = await r.json();
+          toast(err.error || 'Erro ao salvar.', 'error');
+        }
+      } catch { toast('Erro de rede.', 'error'); }
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    });
+
+    // ── Export CSV ─────────────────────────────────────────
+    function exportCSV() {
+      const fy = currentFiscalYear || getFiscalYear(today);
+      const fyEntries = allEntries.filter(e => getFiscalYear(e.data) === fy);
+      const BOM = '\uFEFF';
+      let csv = BOM + 'Data;Categoria;Descrição;Tipo;Valor\n';
+
+      let totalAnual = 0;
+      FISCAL_MONTHS.forEach((m, fiscalIdx) => {
+        const { month, year } = monthYearForFiscal(fy, fiscalIdx);
+        const me = fyEntries.filter(e => {
+          const d = new Date(e.data + 'T00:00:00');
+          return d.getMonth() === month && d.getFullYear() === year;
+        }).sort((a, b) => a.data.localeCompare(b.data));
+        if (!me.length) return;
+        csv += `\n# ${MONTH_NAMES[month]} ${year}\n`;
+        let totalMes = 0;
+        me.forEach(e => {
+          const v = e.tipo === 'credito' ? e.valor : -e.valor;
+          totalMes += v;
+          totalAnual += v;
+          csv += `${fmtDate(e.data)};${e.categoria};${(e.descricao||'').replace(/;/g,',')};${e.tipo === 'credito' ? 'Crédito' : 'Débito'};${e.valor.toFixed(2).replace('.',',')}\n`;
+        });
+        csv += `;;Total do mês;;${(totalMes >= 0 ? '' : '-') + Math.abs(totalMes).toFixed(2).replace('.',',')}\n`;
+      });
+      csv += `\n;;Total do Exercício ${fy}/${fy+1};;${(totalAnual >= 0 ? '' : '-') + Math.abs(totalAnual).toFixed(2).replace('.',',')}\n`;
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `financeiro-${fy}-${fy+1}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+    }
+
+    // ── Print ──────────────────────────────────────────────
+    function printReport() {
+      const fy = currentFiscalYear || getFiscalYear(today);
+      const fyEntries = allEntries.filter(e => getFiscalYear(e.data) === fy);
+      const entradas  = fyEntries.filter(e => e.tipo === 'credito').reduce((s, e) => s + e.valor, 0);
+      const saidas    = fyEntries.filter(e => e.tipo === 'debito').reduce((s, e) => s + e.valor, 0);
+      const saldo     = entradas - saidas;
+
+      let monthsHtml = '';
+      FISCAL_MONTHS.forEach((m, fiscalIdx) => {
+        const { month, year } = monthYearForFiscal(fy, fiscalIdx);
+        const me = fyEntries.filter(e => {
+          const d = new Date(e.data + 'T00:00:00');
+          return d.getMonth() === month && d.getFullYear() === year;
+        }).sort((a, b) => a.data.localeCompare(b.data));
+        if (!me.length) return;
+        let totalMes = me.reduce((s, e) => s + (e.tipo === 'credito' ? e.valor : -e.valor), 0);
+        const rows = me.map(e => `
+          <tr>
+            <td>${fmtDate(e.data)}</td>
+            <td>${escHtml(e.categoria)}</td>
+            <td>${escHtml(e.descricao)}</td>
+            <td>${e.tipo === 'credito' ? 'Crédito' : 'Débito'}</td>
+            <td style="text-align:right;">${e.tipo === 'debito' ? '- ' : '+ '}${fmtBRL(e.valor)}</td>
+          </tr>`).join('');
+        monthsHtml += `
+          <h3 style="margin:1.5rem 0 0.5rem;font-size:1rem;">${MONTH_NAMES[month]} ${year}</h3>
+          <table border="1" cellpadding="5" cellspacing="0" style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+            <thead style="background:#f0f0f0;">
+              <tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Tipo</th><th>Valor</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+            <tfoot>
+              <tr style="font-weight:700;background:#e8e8e8;">
+                <td colspan="4">Total do mês</td>
+                <td style="text-align:right;">${(totalMes < 0 ? '- ' : '+ ') + fmtBRL(totalMes)}</td>
+              </tr>
+            </tfoot>
+          </table>`;
+      });
+
+      const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+        <title>Financeiro – ${fiscalYearLabel(fy)}</title>
+        <style>body{font-family:Arial,sans-serif;padding:2rem;color:#111;}h1{margin-bottom:0.25rem;}p{margin:0 0 1rem;color:#555;}
+        .summary{display:flex;gap:2rem;margin-bottom:1.5rem;padding:0.75rem 1rem;background:#f8f8f8;border:1px solid #ddd;}
+        .summary div{display:flex;flex-direction:column;gap:0.1rem;} .summary strong{font-size:1.1rem;}
+        @media print{@page{margin:1.5cm;} button{display:none;}}</style>
+      </head><body>
+        <h1>Relatório Financeiro – ${fiscalYearLabel(fy)}</h1>
+        <p>Ordem DeMolay Piauí — Gerado em ${new Date().toLocaleDateString('pt-BR')}</p>
+        <div class="summary">
+          <div><small>Total Entradas</small><strong style="color:#1b7a3e;">${fmtBRL(entradas)}</strong></div>
+          <div><small>Total Saídas</small><strong style="color:#d94f4f;">${fmtBRL(saidas)}</strong></div>
+          <div><small>Saldo</small><strong style="color:${saldo >= 0 ? '#1b7a3e' : '#d94f4f'};">${saldo < 0 ? '- ' : ''}${fmtBRL(saldo)}</strong></div>
+        </div>
+        ${monthsHtml}
+        <hr style="margin:1.5rem 0;">
+        <p style="font-weight:700;font-size:1rem;">Saldo do Exercício: <span style="color:${saldo >= 0 ? '#1b7a3e' : '#d94f4f'};">${saldo < 0 ? '- ' : ''}${fmtBRL(saldo)}</span></p>
+      </body></html>`;
+
+      const w = window.open('', '_blank');
+      w.document.write(html);
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+
+    // ── Init ───────────────────────────────────────────────
+    (async () => {
+      await loadEntries();
+      currentFiscalYear = getFiscalYear(today);
+      buildFiscalYearOptions();
+    })();
+  </script>
+</body>
+</html>
